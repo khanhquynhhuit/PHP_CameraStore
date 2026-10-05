@@ -2,7 +2,7 @@
 
 namespace App\Modules\Auth\Repositories;
 
-use App\Enums\RoleName;
+use App\Models\Enums\RoleName;
 use App\Models\User;
 
 class AuthRepository

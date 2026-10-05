@@ -17,6 +17,10 @@ app/modules/<TênModule>/
 └── Requests/         # Form Request xác thực & Validate dữ liệu đầu vào
 ```
 
+- **Thư mục Models & Enums chung (`app/Models/`):**
+  - Toàn bộ Eloquent Models (`Product.php`, `Order.php`, `User.php`...) nằm trong `app/Models/`.
+  - Toàn bộ Enums hệ thống (`OrderStatus.php`, `PaymentMethod.php`, `RoleName.php`...) nằm trong **`app/Models/Enums/`** (Namespace: `App\Models\Enums`).
+
 ---
 
 ## 2. CẤU TRÚC THƯ MỤC GIAO DIỆN THEO MODULE (`resources/views/`)

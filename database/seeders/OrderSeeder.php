@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Enums\OrderStatus;
-use App\Enums\PaymentMethod;
-use App\Enums\PaymentStatus;
-use App\Enums\RoleName;
+use App\Models\Enums\OrderStatus;
+use App\Models\Enums\PaymentMethod;
+use App\Models\Enums\PaymentStatus;
+use App\Models\Enums\RoleName;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;

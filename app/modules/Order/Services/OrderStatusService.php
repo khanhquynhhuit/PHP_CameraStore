@@ -2,7 +2,7 @@
 
 namespace App\Modules\Order\Services;
 
-use App\Enums\OrderStatus;
+use App\Models\Enums\OrderStatus;
 use App\Models\Order;
 use App\Modules\Order\Repositories\OrderRepository;
 

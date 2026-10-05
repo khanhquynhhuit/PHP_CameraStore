@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Enums\CouponType;
+use App\Models\Enums\CouponType;
 use App\Models\Coupon;
 use Illuminate\Database\Seeder;
 

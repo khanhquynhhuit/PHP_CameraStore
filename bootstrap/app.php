@@ -12,12 +12,20 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->append(\App\Http\Middleware\GlobalRequestLogger::class);
+
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
+            'exception.filter' => \App\Http\Middleware\GlobalExceptionFilter::class,
+            'request.logger' => \App\Http\Middleware\GlobalRequestLogger::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn(Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        $exceptions->render(function (\Throwable $e, Request $request) {
+            return \App\Exceptions\GlobalExceptionHandler::render($e, $request);
+        });
     })->create();

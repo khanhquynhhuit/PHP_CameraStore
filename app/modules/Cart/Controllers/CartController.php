@@ -18,42 +18,88 @@ class CartController extends Controller
     ) {}
 
     /**
-     * Display a listing of the resource.
+     * Hiển thị danh sách sản phẩm trong giỏ hàng
      */
     public function index(Request $request)
     {
-        // TODO: Viết phần trả về danh sách giỏ hàng
+        $userId = $request->user()->id;
+        $cartData = $this->cartService->getCart($userId);
+
+        if ($request->wantsJson()) {
+            return $this->successResponse($cartData, 'Lấy thông tin giỏ hàng thành công');
+        }
+
+        return view('modules.Cart.pages.index', [
+            'cart' => $cartData['cart'],
+            'items' => $cartData['items'],
+            'subtotal' => $cartData['subtotal'],
+            'totalItems' => $cartData['total_items'],
+            'total' => $cartData['total'],
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Thêm sản phẩm vào giỏ hàng
      */
     public function store(AddToCartRequest $request)
     {
-        // TODO: Viết phần thêm sản phẩm vào giỏ hàng
+        $userId = $request->user()->id;
+        $productId = $request->validated('product_id');
+        $quantity = (int) $request->validated('quantity', 1);
+
+        $this->cartService->addToCart($userId, $productId, $quantity);
+
+        if ($request->wantsJson()) {
+            return $this->successResponse(null, 'Đã thêm sản phẩm vào giỏ hàng');
+        }
+
+        return redirect()->back()->with('success', 'Đã thêm sản phẩm vào giỏ hàng thành công!');
     }
 
     /**
-     * Update the specified resource in storage.
+     * Cập nhật số lượng sản phẩm
      */
     public function update(UpdateCartItemRequest $request, string $id)
     {
-        // TODO: Viết phần cập nhật số lượng
+        $userId = $request->user()->id;
+        $quantity = (int) $request->validated('quantity');
+
+        $this->cartService->updateQuantity($userId, $id, $quantity);
+
+        if ($request->wantsJson()) {
+            return $this->successResponse(null, 'Cập nhật số lượng thành công');
+        }
+
+        return redirect()->route('cart.index')->with('success', 'Đã cập nhật số lượng sản phẩm!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Xóa 1 sản phẩm khỏi giỏ hàng
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        // TODO: Viết phần xóa sản phẩm khỏi giỏ hàng
+        $userId = $request->user()->id;
+        $this->cartService->removeItem($userId, $id);
+
+        if ($request->wantsJson()) {
+            return $this->successResponse(null, 'Đã xóa sản phẩm khỏi giỏ hàng');
+        }
+
+        return redirect()->route('cart.index')->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng!');
     }
 
     /**
-     * Clear all items in cart.
+     * Làm rỗng toàn bộ giỏ hàng
      */
-    public function clear()
+    public function clear(Request $request)
     {
-        // TODO: Viết phần làm rỗng giỏ hàng
+        $userId = $request->user()->id;
+        $this->cartService->clearCart($userId);
+
+        if ($request->wantsJson()) {
+            return $this->successResponse(null, 'Đã làm rỗng giỏ hàng');
+        }
+
+        return redirect()->route('cart.index')->with('success', 'Đã làm rỗng giỏ hàng thành công!');
     }
 }

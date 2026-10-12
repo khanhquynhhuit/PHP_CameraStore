@@ -8,35 +8,75 @@ use App\Models\CartItem;
 class CartRepository
 {
     /**
-     * Nơi viết các truy vấn Database liên quan đến giỏ hàng
+     * Lấy hoặc tạo mới giỏ hàng theo User ID kèm eager loading items và product
      */
-    public function getCartByUserId(int|string $userId)
+    public function getCartByUserId(int|string $userId): Cart
     {
-        // TODO: Viết query lấy giỏ hàng của user
+        return Cart::firstOrCreate(['user_id' => $userId])
+            ->load(['items.product.productImages']);
     }
 
-    public function findCartItem(int|string $cartId, int|string $productId)
+    /**
+     * Tìm sản phẩm cụ thể trong giỏ hàng
+     */
+    public function findCartItem(int|string $cartId, int|string $productId): ?CartItem
     {
-        // TODO: Viết query tìm sản phẩm trong giỏ
+        return CartItem::where('cart_id', $cartId)
+            ->where('product_id', $productId)
+            ->first();
     }
 
-    public function addItem(int|string $cartId, int|string $productId, int $quantity)
+    /**
+     * Tìm CartItem theo ID thuộc về Cart cụ thể
+     */
+    public function findItemByIdAndCartId(int|string $itemId, int|string $cartId): ?CartItem
     {
-        // TODO: Viết query thêm sản phẩm vào giỏ
+        return CartItem::where('id', $itemId)
+            ->where('cart_id', $cartId)
+            ->first();
     }
 
-    public function updateItem(CartItem|int|string $item, int $quantity)
+    /**
+     * Thêm mới sản phẩm vào giỏ hàng
+     */
+    public function addItem(int|string $cartId, int|string $productId, int $quantity): CartItem
     {
-        // TODO: Viết query cập nhật số lượng
+        return CartItem::create([
+            'cart_id' => $cartId,
+            'product_id' => $productId,
+            'quantity' => $quantity,
+        ]);
     }
 
-    public function removeItem(CartItem|int|string $item)
+    /**
+     * Cập nhật số lượng sản phẩm trong giỏ
+     */
+    public function updateItem(CartItem|int|string $item, int $quantity): bool
     {
-        // TODO: Viết query xóa sản phẩm khỏi giỏ
+        if (!$item instanceof CartItem) {
+            $item = CartItem::findOrFail($item);
+        }
+
+        return $item->update(['quantity' => $quantity]);
     }
 
-    public function clearCart(int|string $cartId)
+    /**
+     * Xóa sản phẩm khỏi giỏ hàng
+     */
+    public function removeItem(CartItem|int|string $item): bool
     {
-        // TODO: Viết query làm rỗng giỏ hàng
+        if (!$item instanceof CartItem) {
+            $item = CartItem::findOrFail($item);
+        }
+
+        return (bool) $item->delete();
+    }
+
+    /**
+     * Làm rỗng toàn bộ giỏ hàng
+     */
+    public function clearCart(int|string $cartId): int
+    {
+        return CartItem::where('cart_id', $cartId)->delete();
     }
 }

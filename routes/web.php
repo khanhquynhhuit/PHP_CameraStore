@@ -22,7 +22,7 @@ Route::get('/categories', [CategoryController::class, 'index'])->name('categorie
 // Dashboard sau đăng nhập
 Route::get('/dashboard', function () {
     return view('modules.Dashboard.pages.index');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
 // Khu vực khách hàng (Customer)
 Route::middleware('auth')->group(function () {
@@ -54,10 +54,10 @@ Route::middleware('auth')->group(function () {
 // Khu vực Quản trị (Admin & Staff)
 Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')->group(function () {
     // Quản lý Sản phẩm
-    Route::apiResource('products', AdminProductController::class);
+    Route::resource('products', AdminProductController::class);
 
     // Quản lý Danh mục
-    Route::apiResource('categories', CategoryController::class);
+    Route::resource('categories', CategoryController::class);
 
     // Quản lý Đơn hàng
     Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
@@ -66,7 +66,7 @@ Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')
 
     // Quản lý Người dùng (chỉ Admin)
     Route::middleware('role:admin')->group(function () {
-        Route::apiResource('users', AdminUserController::class);
+        Route::resource('users', AdminUserController::class);
     });
 });
 

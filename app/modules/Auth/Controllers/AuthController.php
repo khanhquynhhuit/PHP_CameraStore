@@ -43,14 +43,16 @@ class AuthController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
+        $user = $request->user();
+
         if ($request->expectsJson()) {
             return $this->successResponse(
-                data: ['user' => $request->user()],
+                data: ['user' => $user],
                 message: 'Đăng nhập thành công'
             );
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('dashboard', absolute: false))->with('success', 'Đăng nhập thành công!');
     }
 
     /**
@@ -76,7 +78,7 @@ class AuthController extends Controller
             );
         }
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('dashboard', absolute: false))->with('success', 'Đăng ký tài khoản thành công!');
     }
 
     /**

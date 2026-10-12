@@ -28,12 +28,19 @@ class AuthRepository
      */
     public function createCustomer(array $data): User
     {
-        return User::create([
+        $user = new User([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => $data['password'],
-            'role' => RoleName::CUSTOMER ?? 'customer',
+            'phone' => $data['phone'] ?? null,
+            'is_active' => true,
         ]);
+
+        // Gán cứng role là CUSTOMER vì 'role' không nằm trong $fillable
+        $user->role = RoleName::CUSTOMER;
+        $user->save();
+
+        return $user;
     }
 
     /**

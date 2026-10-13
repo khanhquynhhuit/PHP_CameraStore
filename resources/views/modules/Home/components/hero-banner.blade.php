@@ -52,17 +52,17 @@
                     </a>
                 </div>
 
-                <!-- Ảnh Canon EOS R to đầy đặn vừa khung -->
-                <div class="absolute -right-3 -bottom-2 top-0 w-[50%] flex items-center justify-center pointer-events-none z-0">
+                <!-- Ảnh Canon EOS R thu nhỏ vừa vặn khung góc phải -->
+                <div class="absolute right-1 bottom-0 top-0 w-[45%] flex items-center justify-end pointer-events-none z-0 pr-1">
                     <img src="{{ asset('images/banners/canon_eos_r.png') }}" 
                          alt="Canon EOS R" 
-                         class="max-h-[175px] w-auto max-w-none object-contain filter drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform duration-300">
+                         class="max-h-[135px] w-auto max-w-full object-contain filter drop-shadow-[0_12px_20px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-300">
                 </div>
             </div>
 
             <!-- Banner phụ 2: FUJIFILM X100 VI -->
             <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-gray-950 via-slate-900 to-gray-900 text-white p-6 flex flex-col justify-between flex-1 shadow-md group">
-                <div class="relative z-10 max-w-[60%]">
+                <div class="relative z-10 max-w-[58%]">
                     <span class="text-[11px] font-bold bg-amber-500 text-gray-900 px-2 py-0.5 rounded uppercase font-black">Hot Trend</span>
                     <h3 class="text-xl font-black mt-2 leading-tight">FUJIFILM X100 VI</h3>
                     <p class="text-xs text-gray-300 mt-1 line-clamp-2">Tone màu phim kinh điển, thiết kế cổ điển</p>
@@ -73,11 +73,11 @@
                     </a>
                 </div>
 
-                <!-- Ảnh Fujifilm X100VI đã tách nền trong suốt -->
-                <div class="absolute right-2 bottom-1 top-1 w-[45%] flex items-center justify-center pointer-events-none z-0">
+                <!-- Ảnh Fujifilm X100VI thu nhỏ gọn gàng, vừa khung -->
+                <div class="absolute right-2 bottom-0 top-0 w-[42%] flex items-center justify-end pointer-events-none z-0 pr-1">
                     <img src="{{ asset('images/banners/fujifilm_x100vi.png') }}" 
                          alt="Fujifilm X100VI" 
-                         class="max-h-[135px] max-w-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform duration-300">
+                         class="max-h-[110px] w-auto max-w-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-300">
                 </div>
             </div>
         </div>

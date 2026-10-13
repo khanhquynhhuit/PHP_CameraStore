@@ -53,10 +53,11 @@
                 </div>
 
                 <!-- Ảnh Canon EOS R thu nhỏ vừa vặn khung góc phải -->
-                <div class="absolute right-1 bottom-0 top-0 w-[45%] flex items-center justify-end pointer-events-none z-0 pr-1">
+                <div class="absolute right-0 bottom-0 top-0 w-[45%] flex items-center justify-end pointer-events-none z-0 pr-3">
                     <img src="{{ asset('images/banners/canon_eos_r.png') }}" 
                          alt="Canon EOS R" 
-                         class="max-h-[135px] w-auto max-w-full object-contain filter drop-shadow-[0_12px_20px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-300">
+                         style="max-height: 105px; max-width: 140px;"
+                         class="w-auto h-auto object-contain filter drop-shadow-[0_10px_16px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-300">
                 </div>
             </div>
 
@@ -74,10 +75,11 @@
                 </div>
 
                 <!-- Ảnh Fujifilm X100VI thu nhỏ gọn gàng, vừa khung -->
-                <div class="absolute right-2 bottom-0 top-0 w-[42%] flex items-center justify-end pointer-events-none z-0 pr-1">
+                <div class="absolute right-0 bottom-0 top-0 w-[42%] flex items-center justify-end pointer-events-none z-0 pr-3">
                     <img src="{{ asset('images/banners/fujifilm_x100vi.png') }}" 
                          alt="Fujifilm X100VI" 
-                         class="max-h-[110px] w-auto max-w-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-300">
+                         style="max-height: 85px; max-width: 130px;"
+                         class="w-auto h-auto object-contain filter drop-shadow-[0_10px_16px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-300">
                 </div>
             </div>
         </div>

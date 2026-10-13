@@ -31,7 +31,9 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index(['status', 'category_id', 'brand_id', 'price'], 'idx_products_filter');
-            $table->fullText('name', 'idx_products_name_fulltext');
+            if (DB::getDriverName() === 'mysql') {
+                $table->fullText('name', 'idx_products_name_fulltext');
+            }
         });
 
         // Ràng buộc CHECK trên MySQL 8

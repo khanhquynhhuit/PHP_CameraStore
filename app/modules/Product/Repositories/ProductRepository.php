@@ -14,9 +14,9 @@ class ProductRepository
         // TODO: Viết query lấy danh sách sản phẩm
     }
 
-    public function findById(int|string $id)
+    public function findById(int|string $id): ?Product
     {
-        // TODO: Viết query tìm sản phẩm theo ID
+        return Product::with(['productImages', 'category', 'brand'])->find($id);
     }
 
     public function create(array $data)

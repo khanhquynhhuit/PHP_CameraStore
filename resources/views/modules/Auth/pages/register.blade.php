@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="mb-6 text-center">
-        <h1 class="text-2xl font-bold text-gray-900">Đăng ký tài khoản</h1>
-        <p class="text-sm text-gray-500 mt-1">Tạo tài khoản khách hàng mới tại Camera Store</p>
+        <h1 class="font-heading text-2xl font-semibold tracking-tight text-ink">Đăng ký tài khoản</h1>
+        <p class="text-sm text-ink/70 mt-1">Tạo tài khoản khách hàng mới tại Camera Store</p>
     </div>
 
     <form method="POST" action="{{ route('register') }}">
@@ -49,14 +49,14 @@
         />
 
         <div class="mt-6">
-            <x-primary-button class="w-full justify-center py-2.5">
+            <x-button variant="primary" size="lg" type="submit" class="w-full">
                 Đăng ký tài khoản
-            </x-primary-button>
+            </x-button>
         </div>
 
-        <div class="mt-4 text-center text-sm text-gray-600">
+        <div class="mt-4 text-center text-sm text-ink/70">
             Đã có tài khoản?
-            <a href="{{ route('login') }}" class="font-semibold text-indigo-600 hover:text-indigo-800">
+            <a href="{{ route('login') }}" class="font-semibold text-ink underline hover:text-ink/80">
                 Đăng nhập tại đây
             </a>
         </div>

@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="mb-6 text-center">
-        <h1 class="text-2xl font-bold text-gray-900">Đăng nhập Camera Store</h1>
-        <p class="text-sm text-gray-500 mt-1">Nhập thông tin tài khoản của bạn để tiếp tục</p>
+        <h1 class="font-heading text-2xl font-semibold tracking-tight text-ink">Đăng nhập Camera Store</h1>
+        <p class="text-sm text-ink/70 mt-1">Nhập thông tin tài khoản của bạn để tiếp tục</p>
     </div>
 
     <!-- Session Status -->
@@ -34,26 +34,26 @@
         <!-- Remember Me & Forgot Password -->
         <div class="flex items-center justify-between mt-4">
             <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">Ghi nhớ đăng nhập</span>
+                <input id="remember_me" type="checkbox" class="rounded border-ink/20 text-primary shadow-sm focus:ring-primary" name="remember">
+                <span class="ms-2 text-sm text-ink/70">Ghi nhớ đăng nhập</span>
             </label>
 
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-indigo-600 hover:text-indigo-800" href="{{ route('password.request') }}">
+                <a class="underline text-sm text-ink hover:text-ink/80" href="{{ route('password.request') }}">
                     Quên mật khẩu?
                 </a>
             @endif
         </div>
 
         <div class="mt-6">
-            <x-primary-button class="w-full justify-center py-2.5">
+            <x-button variant="primary" size="lg" type="submit" class="w-full">
                 Đăng nhập
-            </x-primary-button>
+            </x-button>
         </div>
 
-        <div class="mt-4 text-center text-sm text-gray-600">
+        <div class="mt-4 text-center text-sm text-ink/70">
             Chưa có tài khoản?
-            <a href="{{ route('register') }}" class="font-semibold text-indigo-600 hover:text-indigo-800">
+            <a href="{{ route('register') }}" class="font-semibold text-ink underline hover:text-ink/80">
                 Đăng ký ngay
             </a>
         </div>

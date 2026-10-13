@@ -7,23 +7,28 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Google Fonts: Be Vietnam Pro (Chuẩn tiếng Việt 100%) -->
+        <!-- Google Fonts: Be Vietnam Pro & Inter (Chuẩn tiếng Việt 100%) -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+    <body class="font-sans text-base text-ink antialiased bg-base">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
             <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                <a href="/" class="flex flex-col items-center gap-2.5 group">
+                    <img src="{{ asset('images/logo.png') }}" 
+                         alt="CameraStore.vn" 
+                         class="w-16 h-16 object-contain group-hover:scale-105 transition-transform duration-200">
+                    <span class="text-2xl font-heading font-bold tracking-tight text-ink">
+                        CAMERASTORE<span class="text-primary">.VN</span>
+                    </span>
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <div class="w-full sm:max-w-md mt-6 px-6 py-6 bg-base border border-ink/10 shadow-sm overflow-hidden sm:rounded-2xl">
                 <x-alert />
                 {{ $slot }}
             </div>

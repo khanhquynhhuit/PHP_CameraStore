@@ -29,11 +29,11 @@
                 </a>
             </div>
 
-            <!-- Ảnh Sony Alpha 7 IV đã xóa nền trong suốt cực đẹp -->
-            <div class="absolute right-0 bottom-0 top-0 w-1/2 flex items-center justify-end pointer-events-none p-4 z-0">
+            <!-- Ảnh Sony Alpha 7 IV đã xóa nền trong suốt to đầy đặn -->
+            <div class="absolute -right-4 -bottom-4 top-0 w-[55%] flex items-center justify-end pointer-events-none p-2 z-0">
                 <img src="{{ asset('images/banners/sony_a7iv.png') }}" 
                      alt="Sony Alpha 7 IV" 
-                     class="max-h-[300px] max-w-full object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-500">
+                     class="max-h-[380px] w-auto max-w-none object-contain filter drop-shadow-[0_25px_35px_rgba(0,0,0,0.9)] group-hover:scale-105 transition-transform duration-500">
             </div>
         </div>
 
@@ -41,7 +41,7 @@
         <div class="flex flex-col gap-4">
             <!-- Banner phụ 1: CANON EOS R SERIES -->
             <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-red-700 via-rose-800 to-red-900 text-white p-6 flex flex-col justify-between flex-1 shadow-md group">
-                <div class="relative z-10 max-w-[60%]">
+                <div class="relative z-10 max-w-[55%]">
                     <span class="text-[11px] font-bold bg-white/20 px-2 py-0.5 rounded text-white uppercase">Siêu ưu đãi</span>
                     <h3 class="text-xl font-black mt-2 leading-tight">CANON EOS R SERIES</h3>
                     <p class="text-xs text-red-100 mt-1 line-clamp-2">Giảm trực tiếp 3.000.000đ khi thanh toán thẻ</p>
@@ -52,11 +52,11 @@
                     </a>
                 </div>
 
-                <!-- Ảnh Canon EOS R đã tách nền trong suốt -->
-                <div class="absolute right-2 bottom-1 top-1 w-[45%] flex items-center justify-center pointer-events-none z-0">
+                <!-- Ảnh Canon EOS R to đầy đặn vừa khung -->
+                <div class="absolute -right-3 -bottom-2 top-0 w-[50%] flex items-center justify-center pointer-events-none z-0">
                     <img src="{{ asset('images/banners/canon_eos_r.png') }}" 
                          alt="Canon EOS R" 
-                         class="max-h-[140px] max-w-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform duration-300">
+                         class="max-h-[175px] w-auto max-w-none object-contain filter drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform duration-300">
                 </div>
             </div>
 

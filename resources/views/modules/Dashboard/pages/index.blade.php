@@ -10,9 +10,9 @@
                     Tổng quan tài khoản Khách hàng
                 @endif
             </h2>
-            <span class="text-sm text-gray-500">
+            <!-- <span class="text-sm text-gray-500">
                 Vai trò hiện tại: <strong>{{ auth()->user()->role->label() }}</strong>
-            </span>
+            </span> -->
         </div>
     </x-slot>
 

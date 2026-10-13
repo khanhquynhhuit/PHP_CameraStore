@@ -2,10 +2,10 @@
 
 @php
     $classes = match($status) {
-        'completed' => 'bg-green-100 text-green-800',
-        'processing', 'shipping' => 'bg-blue-100 text-blue-800',
-        'cancelled' => 'bg-red-100 text-red-800',
-        default => 'bg-yellow-100 text-yellow-800',
+        'completed' => 'bg-success text-success-ink border border-success-ink/20',
+        'processing', 'shipping' => 'bg-info text-info-ink border border-info-ink/20',
+        'cancelled' => 'bg-danger text-danger-ink border border-danger-ink/20',
+        default => 'bg-warning text-warning-ink border border-warning-ink/20',
     };
 
     $label = match($status) {

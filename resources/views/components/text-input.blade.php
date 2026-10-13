@@ -5,8 +5,8 @@
     $hasError = $name && $errors->has($name);
     
     $classes = $hasError
-        ? 'border-red-400 focus:border-red-500 focus:ring-red-500 bg-red-50/20 text-red-900 rounded-md shadow-sm'
-        : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm';
+        ? 'border-danger-ink/50 focus:border-danger-ink focus:ring-danger bg-danger/20 text-danger-ink rounded-lg shadow-sm'
+        : 'border-ink/20 focus:border-primary focus:ring-primary bg-base text-ink rounded-lg shadow-sm';
 @endphp
 
 <input @disabled($disabled) {{ $attributes->merge(['class' => $classes]) }}>

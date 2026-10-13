@@ -13,16 +13,16 @@
     $inputValue = old($name, $value);
     
     $textareaClasses = $hasError
-        ? 'border-red-400 focus:border-red-500 focus:ring-red-500 bg-red-50/20 text-red-900 rounded-md shadow-sm block w-full mt-1'
-        : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full mt-1';
+        ? 'border-danger-ink/50 focus:border-danger-ink focus:ring-danger-ink bg-danger/30 text-danger-ink rounded-lg shadow-sm block w-full mt-1'
+        : 'border-ink/20 focus:border-primary focus:ring-primary bg-base text-ink rounded-lg shadow-sm block w-full mt-1';
 @endphp
 
 <div {{ $attributes->merge(['class' => 'mb-4']) }}>
     @if ($label)
-        <label for="{{ $name }}" class="block font-medium text-sm text-gray-700">
+        <label for="{{ $name }}" class="block font-medium text-sm text-ink">
             {{ $label }}
             @if ($required)
-                <span class="text-red-500 font-bold">*</span>
+                <span class="text-danger-ink font-bold">*</span>
             @endif
         </label>
     @endif

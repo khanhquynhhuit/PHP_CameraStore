@@ -24,21 +24,19 @@
     <!-- Trigger Button -->
     <a href="{{ route('cart.index') }}" 
        @mouseenter="open = true"
-       class="relative flex items-center gap-2 p-2 px-3 text-gray-700 hover:text-red-600 focus:outline-none transition rounded-lg hover:bg-red-50 border border-gray-200"
+       class="relative flex items-center gap-2 p-2 px-3 text-ink bg-surface hover:bg-sand/60 focus:outline-none transition rounded-lg border border-beige/60"
        title="Giỏ hàng">
         <div class="relative">
-            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-            </svg>
+            <x-phosphor-shopping-cart-light class="w-6 h-6 text-primary" />
             @if ($cartItemCount > 0)
-                <span class="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-[11px] font-bold text-white bg-red-600 rounded-full border-2 border-white shadow-sm">
+                <span class="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-[11px] font-bold text-cream bg-primary rounded-full border-2 border-surface shadow-sm">
                     {{ $cartItemCount > 99 ? '99+' : $cartItemCount }}
                 </span>
             @endif
         </div>
         <div class="hidden lg:block text-left text-xs">
-            <span class="text-gray-400 block text-[10px] uppercase font-bold">Giỏ hàng</span>
-            <span class="font-bold text-gray-800">
+            <span class="text-ink/65 block text-[10px] uppercase font-bold">Giỏ hàng</span>
+            <span class="font-bold text-ink">
                 {{ $cartItemCount }} món
             </span>
         </div>
@@ -52,24 +50,24 @@
          x-transition:leave="transition ease-in duration-75"
          x-transition:leave-start="transform opacity-100 scale-100"
          x-transition:leave-end="transform opacity-0 scale-95"
-         class="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
+         class="absolute right-0 mt-2 w-80 sm:w-96 bg-surface text-ink rounded-xl shadow-xl border border-beige/60 z-50 overflow-hidden"
          style="display: none;">
         
-        <div class="p-3 bg-red-50 border-b border-red-100 flex items-center justify-between">
-            <span class="text-sm font-bold text-red-700 flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.24-1.2A1 1 0 005.06 1H3z"/></svg>
+        <div class="p-3 bg-base border-b border-beige/40 flex items-center justify-between">
+            <span class="text-sm font-bold text-ink flex items-center gap-1.5">
+                <x-phosphor-shopping-cart-light class="w-4 h-4 text-primary" />
                 Giỏ hàng của bạn ({{ $cartItemCount }} món)
             </span>
-            <a href="{{ route('cart.index') }}" class="text-xs text-red-600 hover:underline font-bold">Xem giỏ hàng &rarr;</a>
+            <a href="{{ route('cart.index') }}" class="text-xs text-primary-dark hover:underline font-bold">Xem giỏ hàng &rarr;</a>
         </div>
 
         @if ($cartItems->isNotEmpty())
             <div>
-                <div class="max-h-64 overflow-y-auto divide-y divide-gray-100 px-3">
+                <div class="max-h-64 overflow-y-auto divide-y divide-beige/30 px-3">
                     @foreach ($cartItems as $item)
                         <div class="py-2.5 flex items-center justify-between gap-3">
                             <div class="flex items-center gap-2.5 min-w-0">
-                                <div class="w-11 h-11 rounded border border-gray-100 bg-gray-50 shrink-0 flex items-center justify-center overflow-hidden">
+                                <div class="w-11 h-11 rounded border border-beige/40 bg-base shrink-0 flex items-center justify-center overflow-hidden">
                                     @php
                                         $image = $item->product->primary_image;
                                         $imgUrl = $image ? asset('storage/' . $image->image_url) : 'https://placehold.co/100x100?text=Camera';
@@ -80,12 +78,12 @@
                                          onerror="this.onerror=null;this.src='https://placehold.co/100x100?text=Camera';">
                                 </div>
                                 <div class="min-w-0">
-                                    <a href="{{ route('products.show', $item->product->id) }}" class="text-xs font-semibold text-gray-900 truncate block hover:text-red-600">
+                                    <a href="{{ route('products.show', $item->product->id) }}" class="text-xs font-semibold text-ink truncate block hover:underline">
                                         {{ $item->product->name }}
                                     </a>
-                                    <p class="text-xs text-gray-500 mt-0.5">
-                                        <span class="font-bold text-gray-700">{{ $item->quantity }}</span> x 
-                                        <span class="text-red-600 font-bold">{{ number_format($item->product->price, 0, ',', '.') }} đ</span>
+                                    <p class="text-xs text-ink/70 mt-0.5">
+                                        <span class="font-bold text-ink">{{ $item->quantity }}</span> x 
+                                        <span class="font-heading font-bold tabular-nums text-primary">{{ number_format($item->product->price, 0, ',', '.') }} đ</span>
                                     </p>
                                 </div>
                             </div>
@@ -93,26 +91,27 @@
                     @endforeach
                 </div>
 
-                <div class="p-3 bg-gray-50 border-t border-gray-100">
+                <div class="p-3 bg-base border-t border-beige/40">
                     <div class="flex justify-between items-center text-sm mb-3">
-                        <span class="text-gray-600 font-medium">Tổng tiền:</span>
-                        <span class="text-base font-black text-red-600">{{ number_format($cartSubtotal, 0, ',', '.') }} đ</span>
+                        <span class="text-ink/70 font-medium">Tổng tiền:</span>
+                        <span class="font-heading text-base font-bold tabular-nums text-primary">{{ number_format($cartSubtotal, 0, ',', '.') }} đ</span>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                        <a href="{{ route('cart.index') }}" class="py-2 px-3 text-center bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-lg transition border border-gray-300">
+                        <x-button variant="outline" size="sm" :href="route('cart.index')" class="w-full">
                             Xem giỏ
-                        </a>
-                        <a href="{{ route('checkout.index') }}" class="py-2 px-3 text-center bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition shadow-sm">
+                        </x-button>
+                        <x-button variant="primary" size="sm" :href="route('checkout.index')" class="w-full">
                             Thanh toán ngay
-                        </a>
+                        </x-button>
                     </div>
                 </div>
             </div>
         @else
             <!-- Khi giỏ rỗng -->
-            <div class="p-6 text-center text-sm text-gray-500">
+            <div class="p-6 text-center text-sm text-ink/70">
+                <x-phosphor-shopping-bag-light class="w-10 h-10 text-stone/60 mx-auto mb-2" />
                 <p class="mb-2">Giỏ hàng của bạn đang trống</p>
-                <a href="{{ route('products.index') }}" class="text-xs text-red-600 font-bold hover:underline">Sắm máy ảnh ngay &rarr;</a>
+                <a href="{{ route('products.index') }}" class="text-xs text-primary-dark font-bold hover:underline">Sắm máy ảnh ngay &rarr;</a>
             </div>
         @endif
     </div>

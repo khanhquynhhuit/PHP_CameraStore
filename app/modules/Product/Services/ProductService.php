@@ -18,9 +18,14 @@ class ProductService
         // TODO: Viết logic lấy danh sách sản phẩm
     }
 
-    public function getProductDetail(int|string $id)
+    public function getProductDetail(int|string $id): Product
     {
-        // TODO: Viết logic lấy chi tiết sản phẩm
+        $product = $this->productRepository->findById($id);
+        if (!$product) {
+            throw new \App\Exceptions\ResourceNotFoundException('Sản phẩm không tồn tại trong hệ thống.');
+        }
+
+        return $product;
     }
 
     public function createProduct(array $data)

@@ -28,6 +28,8 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        // TODO: Viết phần trả về chi tiết sản phẩm
+        $product = $this->productService->getProductDetail($id);
+
+        return view('modules.Product.pages.show', compact('product'));
     }
 }

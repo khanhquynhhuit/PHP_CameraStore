@@ -148,9 +148,9 @@ class OrderService
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
+                    'product_name' => $item->product->name,
+                    'unit_price' => $item->product->price,
                     'quantity' => $item->quantity,
-                    'price' => $item->product->price,
-                    'total' => (float) $item->product->price * $item->quantity,
                 ]);
 
                 // Trừ tồn kho máy ảnh
@@ -163,7 +163,8 @@ class OrderService
             // Ghi lịch sử trạng thái đơn hàng
             OrderStatusHistory::create([
                 'order_id' => $order->id,
-                'status' => OrderStatus::CONFIRMED,
+                'from_status' => null,
+                'to_status' => OrderStatus::CONFIRMED->value,
                 'changed_by' => $userId,
                 'note' => 'Đơn hàng thanh toán thành công qua ' . $paymentMethodEnum->label(),
             ]);

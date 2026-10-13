@@ -41,7 +41,7 @@
         <div class="flex flex-col gap-4">
             <!-- Banner phụ 1: CANON EOS R SERIES -->
             <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-red-700 via-rose-800 to-red-900 text-white p-6 flex flex-col justify-between flex-1 shadow-md group">
-                <div class="relative z-10 max-w-[55%]">
+                <div class="relative z-10 max-w-[50%]">
                     <span class="text-[11px] font-bold bg-white/20 px-2 py-0.5 rounded text-white uppercase">Siêu ưu đãi</span>
                     <h3 class="text-xl font-black mt-2 leading-tight">CANON EOS R SERIES</h3>
                     <p class="text-xs text-red-100 mt-1 line-clamp-2">Giảm trực tiếp 3.000.000đ khi thanh toán thẻ</p>
@@ -52,18 +52,18 @@
                     </a>
                 </div>
 
-                <!-- Ảnh Canon EOS R thu nhỏ vừa vặn khung góc phải -->
-                <div class="absolute right-0 bottom-0 top-0 w-[45%] flex items-center justify-end pointer-events-none z-0 pr-3">
+                <!-- Ảnh Canon EOS R tăng kích thước 80% cân đối hoàn hảo -->
+                <div class="absolute right-0 bottom-0 top-0 w-[52%] flex items-center justify-end pointer-events-none z-0 pr-2">
                     <img src="{{ asset('images/banners/canon_eos_r.png') }}" 
                          alt="Canon EOS R" 
-                         style="max-height: 105px; max-width: 140px;"
-                         class="w-auto h-auto object-contain filter drop-shadow-[0_10px_16px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-300">
+                         style="max-height: 190px; max-width: 250px;"
+                         class="w-auto h-auto object-contain filter drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-300">
                 </div>
             </div>
 
             <!-- Banner phụ 2: FUJIFILM X100 VI -->
             <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-gray-950 via-slate-900 to-gray-900 text-white p-6 flex flex-col justify-between flex-1 shadow-md group">
-                <div class="relative z-10 max-w-[58%]">
+                <div class="relative z-10 max-w-[50%]">
                     <span class="text-[11px] font-bold bg-amber-500 text-gray-900 px-2 py-0.5 rounded uppercase font-black">Hot Trend</span>
                     <h3 class="text-xl font-black mt-2 leading-tight">FUJIFILM X100 VI</h3>
                     <p class="text-xs text-gray-300 mt-1 line-clamp-2">Tone màu phim kinh điển, thiết kế cổ điển</p>
@@ -74,12 +74,12 @@
                     </a>
                 </div>
 
-                <!-- Ảnh Fujifilm X100VI thu nhỏ gọn gàng, vừa khung -->
-                <div class="absolute right-0 bottom-0 top-0 w-[42%] flex items-center justify-end pointer-events-none z-0 pr-3">
+                <!-- Ảnh Fujifilm X100VI tăng kích thước 80% cân đối hoàn hảo -->
+                <div class="absolute right-0 bottom-0 top-0 w-[52%] flex items-center justify-end pointer-events-none z-0 pr-2">
                     <img src="{{ asset('images/banners/fujifilm_x100vi.png') }}" 
                          alt="Fujifilm X100VI" 
-                         style="max-height: 85px; max-width: 130px;"
-                         class="w-auto h-auto object-contain filter drop-shadow-[0_10px_16px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-300">
+                         style="max-height: 155px; max-width: 230px;"
+                         class="w-auto h-auto object-contain filter drop-shadow-[0_12px_22px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-300">
                 </div>
             </div>
         </div>

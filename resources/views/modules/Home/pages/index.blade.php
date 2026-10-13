@@ -19,19 +19,19 @@
                     </a>
                 </div>
 
-                    @php
-                        $categoryImages = [
-                            'dslr' => 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=150&q=80',
-                            'mirrorless' => 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=150&q=80',
-                            'compact' => 'https://images.unsplash.com/photo-1512790182412-b19e6d62bc39?auto=format&fit=crop&w=150&q=80',
-                            'instant' => 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=150&q=80',
-                            'action-camera' => 'https://images.unsplash.com/photo-1564466809058-bf4114d55352?auto=format&fit=crop&w=150&q=80',
-                            'ong-kinh-lens' => 'https://images.unsplash.com/photo-1617005082133-548c4dd27f35?auto=format&fit=crop&w=150&q=80',
-                            'phu-kien' => 'https://images.unsplash.com/photo-1584824486509-112e4181ff6b?auto=format&fit=crop&w=150&q=80',
-                        ];
-                        $slug = Str::slug($category->name);
-                        $catImg = $categoryImages[$slug] ?? 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=150&q=80';
-                    @endphp
+                @php
+                    $categoryImages = [
+                        'dslr' => 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=150&q=80',
+                        'mirrorless' => 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=150&q=80',
+                        'compact' => 'https://images.unsplash.com/photo-1512790182412-b19e6d62bc39?auto=format&fit=crop&w=150&q=80',
+                        'instant' => 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=150&q=80',
+                        'action-camera' => 'https://images.unsplash.com/photo-1564466809058-bf4114d55352?auto=format&fit=crop&w=150&q=80',
+                        'ong-kinh-lens' => 'https://images.unsplash.com/photo-1617005082133-548c4dd27f35?auto=format&fit=crop&w=150&q=80',
+                        'phu-kien' => 'https://images.unsplash.com/photo-1584824486509-112e4181ff6b?auto=format&fit=crop&w=150&q=80',
+                    ];
+                @endphp
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
                     @foreach ($featuredCategories as $category)
                         @php
                             $catSlug = Str::slug($category->name);

@@ -1,7 +1,7 @@
 <div class="my-6">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <!-- Banner chính (Main Slider Banner: Sony Alpha 7 IV) -->
-        <div class="lg:col-span-2 relative rounded-2xl overflow-hidden shadow-lg bg-gradient-to-r from-gray-950 via-gray-900 to-black text-white p-8 sm:p-12 flex flex-col justify-between min-h-[340px]">
+        <div class="lg:col-span-2 relative rounded-2xl overflow-hidden shadow-lg bg-gradient-to-r from-gray-950 via-gray-900 to-black text-white p-8 sm:p-12 flex flex-col justify-between min-h-[340px] group">
             <div class="relative z-10 max-w-lg">
                 <span class="inline-block px-3 py-1 bg-red-600 text-white text-xs font-black rounded uppercase tracking-wider mb-3">
                     Độc quyền tại KYMA
@@ -29,19 +29,19 @@
                 </a>
             </div>
 
-            <!-- Background hình camera mờ nghệ thuật -->
-            <div class="absolute right-0 bottom-0 top-0 w-1/2 opacity-30 lg:opacity-75 pointer-events-none flex items-center justify-center p-4">
-                <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80" 
+            <!-- Ảnh Sony Alpha 7 IV đã xóa nền trong suốt cực đẹp -->
+            <div class="absolute right-0 bottom-0 top-0 w-1/2 flex items-center justify-end pointer-events-none p-4 z-0">
+                <img src="{{ asset('images/banners/sony_a7iv.png') }}" 
                      alt="Sony Alpha 7 IV" 
-                     class="w-full h-full object-contain filter drop-shadow-2xl">
+                     class="max-h-[300px] max-w-full object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-500">
             </div>
         </div>
 
-        <!-- 2 Banner phụ bên phải (Có ảnh mô tả rõ ràng) -->
+        <!-- 2 Banner phụ bên phải (Có ảnh tách nền trong suốt) -->
         <div class="flex flex-col gap-4">
             <!-- Banner phụ 1: CANON EOS R SERIES -->
             <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-red-700 via-rose-800 to-red-900 text-white p-6 flex flex-col justify-between flex-1 shadow-md group">
-                <div class="relative z-10 max-w-[65%]">
+                <div class="relative z-10 max-w-[60%]">
                     <span class="text-[11px] font-bold bg-white/20 px-2 py-0.5 rounded text-white uppercase">Siêu ưu đãi</span>
                     <h3 class="text-xl font-black mt-2 leading-tight">CANON EOS R SERIES</h3>
                     <p class="text-xs text-red-100 mt-1 line-clamp-2">Giảm trực tiếp 3.000.000đ khi thanh toán thẻ</p>
@@ -52,17 +52,17 @@
                     </a>
                 </div>
 
-                <!-- Hình ảnh thực tế Canon EOS -->
-                <div class="absolute right-2 bottom-2 top-2 w-[40%] flex items-center justify-center pointer-events-none">
-                    <img src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=400&q=80" 
+                <!-- Ảnh Canon EOS R đã tách nền trong suốt -->
+                <div class="absolute right-2 bottom-1 top-1 w-[45%] flex items-center justify-center pointer-events-none z-0">
+                    <img src="{{ asset('images/banners/canon_eos_r.png') }}" 
                          alt="Canon EOS R" 
-                         class="max-h-full max-w-full object-contain filter drop-shadow-xl group-hover:scale-110 transition duration-300">
+                         class="max-h-[140px] max-w-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform duration-300">
                 </div>
             </div>
 
             <!-- Banner phụ 2: FUJIFILM X100 VI -->
             <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-gray-950 via-slate-900 to-gray-900 text-white p-6 flex flex-col justify-between flex-1 shadow-md group">
-                <div class="relative z-10 max-w-[65%]">
+                <div class="relative z-10 max-w-[60%]">
                     <span class="text-[11px] font-bold bg-amber-500 text-gray-900 px-2 py-0.5 rounded uppercase font-black">Hot Trend</span>
                     <h3 class="text-xl font-black mt-2 leading-tight">FUJIFILM X100 VI</h3>
                     <p class="text-xs text-gray-300 mt-1 line-clamp-2">Tone màu phim kinh điển, thiết kế cổ điển</p>
@@ -73,11 +73,11 @@
                     </a>
                 </div>
 
-                <!-- Hình ảnh thực tế Fujifilm -->
-                <div class="absolute right-2 bottom-2 top-2 w-[40%] flex items-center justify-center pointer-events-none">
-                    <img src="https://images.unsplash.com/photo-1512790182412-b19e6d62bc39?auto=format&fit=crop&w=400&q=80" 
+                <!-- Ảnh Fujifilm X100VI đã tách nền trong suốt -->
+                <div class="absolute right-2 bottom-1 top-1 w-[45%] flex items-center justify-center pointer-events-none z-0">
+                    <img src="{{ asset('images/banners/fujifilm_x100vi.png') }}" 
                          alt="Fujifilm X100VI" 
-                         class="max-h-full max-w-full object-contain filter drop-shadow-xl group-hover:scale-110 transition duration-300">
+                         class="max-h-[135px] max-w-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform duration-300">
                 </div>
             </div>
         </div>

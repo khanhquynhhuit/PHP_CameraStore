@@ -29,12 +29,15 @@ class CartController extends Controller
             return $this->successResponse($cartData, 'Lấy thông tin giỏ hàng thành công');
         }
 
+        $addresses = \App\Models\Address::where('user_id', $userId)->get();
+
         return view('modules.Cart.pages.index', [
             'cart' => $cartData['cart'],
             'items' => $cartData['items'],
             'subtotal' => $cartData['subtotal'],
             'totalItems' => $cartData['total_items'],
             'total' => $cartData['total'],
+            'addresses' => $addresses,
         ]);
     }
 

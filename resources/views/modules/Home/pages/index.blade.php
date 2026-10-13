@@ -19,12 +19,30 @@
                     </a>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                    @php
+                        $categoryImages = [
+                            'dslr' => 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=150&q=80',
+                            'mirrorless' => 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=150&q=80',
+                            'compact' => 'https://images.unsplash.com/photo-1512790182412-b19e6d62bc39?auto=format&fit=crop&w=150&q=80',
+                            'instant' => 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=150&q=80',
+                            'action-camera' => 'https://images.unsplash.com/photo-1564466809058-bf4114d55352?auto=format&fit=crop&w=150&q=80',
+                            'ong-kinh-lens' => 'https://images.unsplash.com/photo-1617005082133-548c4dd27f35?auto=format&fit=crop&w=150&q=80',
+                            'phu-kien' => 'https://images.unsplash.com/photo-1584824486509-112e4181ff6b?auto=format&fit=crop&w=150&q=80',
+                        ];
+                        $slug = Str::slug($category->name);
+                        $catImg = $categoryImages[$slug] ?? 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=150&q=80';
+                    @endphp
                     @foreach ($featuredCategories as $category)
+                        @php
+                            $catSlug = Str::slug($category->name);
+                            $catImg = $categoryImages[$catSlug] ?? 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=150&q=80';
+                        @endphp
                         <a href="{{ route('products.index', ['category_id' => $category->id]) }}" 
-                           class="p-4 bg-white border border-gray-200 rounded-lg hover:border-red-500 hover:shadow-md transition text-center flex flex-col items-center group">
-                            <div class="w-12 h-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition duration-300">
-                                📷
+                           class="p-3 bg-white border border-gray-200 rounded-xl hover:border-red-500 hover:shadow-md transition text-center flex flex-col items-center group">
+                            <div class="w-16 h-16 rounded-xl bg-gray-50 p-1 mb-2 flex items-center justify-center overflow-hidden border border-gray-100 group-hover:scale-105 transition duration-300">
+                                <img src="{{ $catImg }}" 
+                                     alt="{{ $category->name }}" 
+                                     class="w-full h-full object-cover rounded-lg">
                             </div>
                             <h3 class="font-bold text-gray-900 group-hover:text-red-600 transition text-xs sm:text-sm line-clamp-1">
                                 {{ $category->name }}

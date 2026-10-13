@@ -1,6 +1,6 @@
 <div class="my-6">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <!-- Banner chính (Main Slider Banner) -->
+        <!-- Banner chính (Main Slider Banner: Sony Alpha 7 IV) -->
         <div class="lg:col-span-2 relative rounded-2xl overflow-hidden shadow-lg bg-gradient-to-r from-gray-950 via-gray-900 to-black text-white p-8 sm:p-12 flex flex-col justify-between min-h-[340px]">
             <div class="relative z-10 max-w-lg">
                 <span class="inline-block px-3 py-1 bg-red-600 text-white text-xs font-black rounded uppercase tracking-wider mb-3">
@@ -10,7 +10,7 @@
                     SONY ALPHA 7 IV
                 </h1>
                 <p class="text-sm sm:text-base text-gray-300 mt-2 font-medium">
-                    Khám phá chuẩn mực nhiếp ảnh Hybird thế hệ mới. Cảm biến 33MP Full-frame, quay 4K 60p 10-bit.
+                    Khám phá chuẩn mực nhiếp ảnh Hybrid thế hệ mới. Cảm biến 33MP Full-frame, quay 4K 60p 10-bit.
                 </p>
                 <div class="mt-4 flex items-baseline gap-3">
                     <span class="text-2xl sm:text-3xl font-black text-red-500">51.990.000 đ</span>
@@ -30,46 +30,60 @@
             </div>
 
             <!-- Background hình camera mờ nghệ thuật -->
-            <div class="absolute right-0 bottom-0 top-0 w-1/2 opacity-30 lg:opacity-60 pointer-events-none flex items-center justify-center">
+            <div class="absolute right-0 bottom-0 top-0 w-1/2 opacity-30 lg:opacity-75 pointer-events-none flex items-center justify-center p-4">
                 <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80" 
-                     alt="Camera Banner" 
-                     class="w-full h-full object-cover mix-blend-screen">
+                     alt="Sony Alpha 7 IV" 
+                     class="w-full h-full object-contain filter drop-shadow-2xl">
             </div>
         </div>
 
-        <!-- 2 Banner phụ bên phải (Đặc trưng layout Kyma.vn) -->
+        <!-- 2 Banner phụ bên phải (Có ảnh mô tả rõ ràng) -->
         <div class="flex flex-col gap-4">
-            <!-- Banner phụ 1 -->
-            <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-red-700 to-rose-900 text-white p-6 flex flex-col justify-between flex-1 shadow-md">
-                <div>
+            <!-- Banner phụ 1: CANON EOS R SERIES -->
+            <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-red-700 via-rose-800 to-red-900 text-white p-6 flex flex-col justify-between flex-1 shadow-md group">
+                <div class="relative z-10 max-w-[65%]">
                     <span class="text-[11px] font-bold bg-white/20 px-2 py-0.5 rounded text-white uppercase">Siêu ưu đãi</span>
-                    <h3 class="text-xl font-black mt-2">CANON EOS R SERIES</h3>
-                    <p class="text-xs text-red-100 mt-1">Giảm trực tiếp 3.000.000đ khi thanh toán thẻ</p>
+                    <h3 class="text-xl font-black mt-2 leading-tight">CANON EOS R SERIES</h3>
+                    <p class="text-xs text-red-100 mt-1 line-clamp-2">Giảm trực tiếp 3.000.000đ khi thanh toán thẻ</p>
                 </div>
-                <div class="mt-3">
+                <div class="relative z-10 mt-3">
                     <a href="{{ route('products.index', ['brand' => 'Canon']) }}" class="text-xs font-bold text-white hover:underline flex items-center gap-1">
                         Xem chi tiết &rarr;
                     </a>
                 </div>
+
+                <!-- Hình ảnh thực tế Canon EOS -->
+                <div class="absolute right-2 bottom-2 top-2 w-[40%] flex items-center justify-center pointer-events-none">
+                    <img src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=400&q=80" 
+                         alt="Canon EOS R" 
+                         class="max-h-full max-w-full object-contain filter drop-shadow-xl group-hover:scale-110 transition duration-300">
+                </div>
             </div>
 
-            <!-- Banner phụ 2 -->
-            <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-gray-900 to-slate-800 text-white p-6 flex flex-col justify-between flex-1 shadow-md">
-                <div>
+            <!-- Banner phụ 2: FUJIFILM X100 VI -->
+            <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-gray-950 via-slate-900 to-gray-900 text-white p-6 flex flex-col justify-between flex-1 shadow-md group">
+                <div class="relative z-10 max-w-[65%]">
                     <span class="text-[11px] font-bold bg-amber-500 text-gray-900 px-2 py-0.5 rounded uppercase font-black">Hot Trend</span>
-                    <h3 class="text-xl font-black mt-2">FUJIFILM X100 VI</h3>
-                    <p class="text-xs text-gray-300 mt-1">Tone màu phim kinh điển, thiết kế cổ điển</p>
+                    <h3 class="text-xl font-black mt-2 leading-tight">FUJIFILM X100 VI</h3>
+                    <p class="text-xs text-gray-300 mt-1 line-clamp-2">Tone màu phim kinh điển, thiết kế cổ điển</p>
                 </div>
-                <div class="mt-3">
+                <div class="relative z-10 mt-3">
                     <a href="{{ route('products.index', ['brand' => 'Fujifilm']) }}" class="text-xs font-bold text-amber-400 hover:underline flex items-center gap-1">
                         Đặt hàng ngay &rarr;
                     </a>
+                </div>
+
+                <!-- Hình ảnh thực tế Fujifilm -->
+                <div class="absolute right-2 bottom-2 top-2 w-[40%] flex items-center justify-center pointer-events-none">
+                    <img src="https://images.unsplash.com/photo-1512790182412-b19e6d62bc39?auto=format&fit=crop&w=400&q=80" 
+                         alt="Fujifilm X100VI" 
+                         class="max-h-full max-w-full object-contain filter drop-shadow-xl group-hover:scale-110 transition duration-300">
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 4 Khối chính sách nổi bật dưới banner (Giống Kyma.vn) -->
+    <!-- 4 Khối chính sách nổi bật dưới banner -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-xs">
         <div class="flex items-center gap-3">
             <span class="text-2xl">🛡️</span>

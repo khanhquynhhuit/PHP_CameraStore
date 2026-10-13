@@ -41,7 +41,16 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => 'Thông tin đăng nhập không chính xác.',
+                'email' => 'Email hoặc mật khẩu không chính xác.',
+            ]);
+        }
+
+        // Kiểm tra nếu tài khoản bị khóa (is_active = false)
+        if (! Auth::user()->is_active) {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'Tài khoản của bạn đã bị vô hiệu hóa.',
             ]);
         }
 

@@ -51,4 +51,28 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
         $response->assertRedirect('/');
     }
+
+    public function test_customer_cannot_access_admin_routes(): void
+    {
+        $customer = User::factory()->customer()->create();
+
+        $response = $this->actingAs($customer)->get('/admin/products');
+
+        $response->assertStatus(403);
+    }
+
+    public function test_staff_can_access_staff_routes_but_not_admin_only_routes(): void
+    {
+        $staff = User::factory()->staff()->create();
+
+        $this->actingAs($staff)->get('/admin/products')->assertStatus(200);
+        $this->actingAs($staff)->get('/admin/users')->assertStatus(403);
+    }
+
+    public function test_admin_can_access_admin_only_routes(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)->get('/admin/users')->assertStatus(200);
+    }
 }

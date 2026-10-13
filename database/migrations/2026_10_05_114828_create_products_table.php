@@ -31,7 +31,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index(['status', 'category_id', 'brand_id', 'price'], 'idx_products_filter');
-            if (DB::getDriverName() === 'mysql') {
+            if (in_array(DB::getDriverName(), ['mysql', 'mariadb', 'pgsql'], true)) {
                 $table->fullText('name', 'idx_products_name_fulltext');
             }
         });

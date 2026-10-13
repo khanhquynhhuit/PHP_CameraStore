@@ -59,12 +59,27 @@
                     <!-- Settings Dropdown -->
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button class="inline-flex items-center px-3 py-2 border border-gray-200 text-xs font-semibold rounded-lg text-gray-700 bg-white hover:text-red-600 hover:border-red-300 focus:outline-none transition">
-                                <div>
+                            <button class="inline-flex items-center gap-2 px-3 py-2 border border-gray-200 text-xs font-semibold rounded-lg text-gray-700 bg-white hover:text-red-600 hover:border-red-300 focus:outline-none transition">
+                                <div class="text-left">
                                     <span class="text-gray-400 block text-[10px]">Xin chào,</span>
                                     <span class="font-bold text-gray-900">{{ Auth::user()->name }}</span>
                                 </div>
-                                <div class="ms-1.5">
+
+                                @if (Auth::user()->isAdmin())
+                                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-700">
+                                        {{ Auth::user()->role->label() }}
+                                    </span>
+                                @elseif (Auth::user()->isStaff())
+                                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
+                                        {{ Auth::user()->role->label() }}
+                                    </span>
+                                @else
+                                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-700">
+                                        {{ Auth::user()->role->label() }}
+                                    </span>
+                                @endif
+
+                                <div>
                                     <svg class="fill-current h-4 w-4 text-gray-400" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                                     </svg>
@@ -73,21 +88,41 @@
                         </x-slot>
 
                         <x-slot name="content">
+                            <x-dropdown-link :href="route('dashboard')">
+                                {{ __('Tổng quan tài khoản') }}
+                            </x-dropdown-link>
+
                             <x-dropdown-link :href="route('profile.edit')">
                                 {{ __('Hồ sơ cá nhân') }}
                             </x-dropdown-link>
 
-                            <x-dropdown-link :href="route('orders.index')">
-                                {{ __('Đơn hàng của tôi') }}
-                            </x-dropdown-link>
+                            @if (Auth::user()->isCustomer())
+                                <x-dropdown-link :href="route('orders.index')">
+                                    {{ __('Đơn hàng của tôi') }}
+                                </x-dropdown-link>
+                            @endif
 
-                            @if (in_array(Auth::user()->role?->value ?? Auth::user()->role, ['admin', 'staff']))
-                                <x-dropdown-link :href="route('admin.orders.index')" class="text-red-600 font-bold">
-                                    {{ __('Quản trị hệ thống') }}
+                            @if (Auth::user()->isAdmin() || Auth::user()->isStaff())
+                                <div class="border-t border-gray-100 my-1"></div>
+                                <x-dropdown-link :href="route('admin.products.index')" class="text-red-600 font-semibold">
+                                    {{ __('QL Sản phẩm') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.categories.index')" class="text-red-600 font-semibold">
+                                    {{ __('QL Danh mục') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.orders.index')" class="text-red-600 font-semibold">
+                                    {{ __('QL Đơn hàng') }}
+                                </x-dropdown-link>
+                            @endif
+
+                            @if (Auth::user()->isAdmin())
+                                <x-dropdown-link :href="route('admin.users.index')" class="text-red-600 font-semibold">
+                                    {{ __('QL Người dùng') }}
                                 </x-dropdown-link>
                             @endif
 
                             <!-- Logout -->
+                            <div class="border-t border-gray-100 my-1"></div>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <x-dropdown-link :href="route('logout')"
@@ -147,6 +182,30 @@
             <a href="{{ route('products.index', ['brand' => 'Fujifilm']) }}" class="hover:text-red-600 transition">
                 Fujifilm X
             </a>
+
+            @auth
+                @if (Auth::user()->isAdmin() || Auth::user()->isStaff())
+                    <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'text-red-600' : 'hover:text-red-600' }} transition">
+                        Bảng điều khiển
+                    </a>
+                    <a href="{{ route('admin.products.index') }}" class="{{ request()->routeIs('admin.products.*') ? 'text-red-600' : 'hover:text-red-600' }} transition">
+                        QL Sản phẩm
+                    </a>
+                    <a href="{{ route('admin.categories.index') }}" class="{{ request()->routeIs('admin.categories.*') ? 'text-red-600' : 'hover:text-red-600' }} transition">
+                        QL Danh mục
+                    </a>
+                    <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'text-red-600' : 'hover:text-red-600' }} transition">
+                        QL Đơn hàng
+                    </a>
+                @endif
+
+                @if (Auth::user()->isAdmin())
+                    <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'text-red-600' : 'hover:text-red-600' }} transition">
+                        QL Người dùng
+                    </a>
+                @endif
+            @endauth
+
             <span class="ms-auto text-xs text-red-600 font-bold bg-red-50 px-2.5 py-1 rounded-full animate-pulse">
                 ⚡ Flash Sale Giảm Đến 30%
             </span>
@@ -167,9 +226,30 @@
             <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">Trang chủ</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">Tất cả sản phẩm</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">Danh mục thiết bị</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.*')">Giỏ hàng</x-responsive-nav-link>
+
             @auth
-                <x-responsive-nav-link :href="route('orders.index')">Đơn hàng của tôi</x-responsive-nav-link>
+                <div class="px-4 py-2 border-t border-gray-100 mt-2">
+                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
+                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }} ({{ Auth::user()->role->label() }})</div>
+                </div>
+
+                @if (Auth::user()->isCustomer())
+                    <x-responsive-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.*')">Giỏ hàng</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.*')">Đơn hàng của tôi</x-responsive-nav-link>
+                @endif
+
+                @if (Auth::user()->isAdmin() || Auth::user()->isStaff())
+                    <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Bảng điều khiển</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*')">QL Sản phẩm</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.categories.index')" :active="request()->routeIs('admin.categories.*')">QL Danh mục</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.orders.index')" :active="request()->routeIs('admin.orders.*')">QL Đơn hàng</x-responsive-nav-link>
+                @endif
+
+                @if (Auth::user()->isAdmin())
+                    <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">QL Người dùng</x-responsive-nav-link>
+                @endif
+
+                <x-responsive-nav-link :href="route('dashboard')">Tổng quan tài khoản</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('profile.edit')">Hồ sơ cá nhân</x-responsive-nav-link>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -178,6 +258,7 @@
                     </x-responsive-nav-link>
                 </form>
             @else
+                <x-responsive-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.*')">Giỏ hàng</x-responsive-nav-link>
                 <div class="grid grid-cols-2 gap-2 pt-2">
                     <a href="{{ route('login') }}" class="text-center py-2 border rounded-lg text-sm font-bold text-gray-700">Đăng nhập</a>
                     <a href="{{ route('register') }}" class="text-center py-2 bg-red-600 text-white rounded-lg text-sm font-bold">Đăng ký</a>

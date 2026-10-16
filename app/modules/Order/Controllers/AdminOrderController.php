@@ -23,7 +23,9 @@ class AdminOrderController extends Controller
      */
     public function index(Request $request)
     {
-        // TODO: Viết phần trả về danh sách đơn hàng cho Admin/Staff
+        $orders = $this->orderService->listAllOrders();
+
+        return view('modules.Order.pages.admin-index', compact('orders'));
     }
 
     /**
@@ -31,7 +33,10 @@ class AdminOrderController extends Controller
      */
     public function show(string $id)
     {
-        // TODO: Viết phần trả về chi tiết đơn hàng
+        $order = $this->orderService->getOrderDetail($id);
+        $order->load(['statusHistories.user']);
+
+        return view('modules.Order.pages.admin-show', compact('order'));
     }
 
     /**
@@ -39,6 +44,21 @@ class AdminOrderController extends Controller
      */
     public function updateStatus(UpdateOrderStatusRequest $request, string $id)
     {
-        // TODO: Viết phần cập nhật trạng thái đơn hàng qua OrderStatusService
+        try {
+            $this->orderStatusService->transitionTo(
+                $id,
+                $request->validated('status'),
+                $request->user()->id,
+                $request->validated('note')
+            );
+
+            return redirect()
+                ->route('admin.orders.show', $id)
+                ->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
+        } catch (\App\Exceptions\BusinessException $e) {
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage());
+        }
     }
 }

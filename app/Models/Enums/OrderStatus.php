@@ -32,8 +32,8 @@ enum OrderStatus: string
     public function allowedNext(): array
     {
         return match ($this) {
-            self::PENDING => [self::CONFIRMED, self::CANCELLED],
-            self::CONFIRMED => [self::SHIPPING, self::CANCELLED],
+            self::PENDING => [self::CONFIRMED, self::COMPLETED, self::CANCELLED],
+            self::CONFIRMED => [self::SHIPPING, self::COMPLETED, self::CANCELLED],
             self::SHIPPING => [self::COMPLETED, self::CANCELLED],
             self::COMPLETED, self::CANCELLED => [],
         };

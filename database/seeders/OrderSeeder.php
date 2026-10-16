@@ -235,7 +235,7 @@ class OrderSeeder extends Seeder
                 ]);
 
                 // Nếu đơn hàng đã hoàn thành, tạo đánh giá mẫu (Review)
-                if ($scenario['status'] === OrderStatus::COMPLETED && rand(0, 1) === 1) {
+                if ($scenario['status'] === OrderStatus::COMPLETED) {
                     Review::query()->firstOrCreate(
                         [
                             'user_id' => $customer->id,
@@ -249,6 +249,7 @@ class OrderSeeder extends Seeder
                                 'Hàng chính hãng đóng gói rất kỹ, giao hàng nhanh, nhân viên tư vấn nhiệt tình.',
                                 'Rất ưng ý với sản phẩm này, cầm đầm tay, quay phim 4K không bị nóng máy.',
                                 'Chất lượng máy ảnh tuyệt vời, ống kính sắc nét, chống rung hoạt động rất tốt.',
+                                'Trải nghiệm chụp ban đêm khử nhiễu rất tốt, màu ảnh tự nhiên.',
                             ]),
                             'created_at' => (clone $createdAt)->addDays(4),
                             'updated_at' => (clone $createdAt)->addDays(4),

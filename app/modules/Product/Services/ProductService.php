@@ -3,7 +3,7 @@
 namespace App\Modules\Product\Services;
 
 use App\Modules\Product\Repositories\ProductRepository;
-
+use App\Models\Product;
 class ProductService
 {
     public function __construct(

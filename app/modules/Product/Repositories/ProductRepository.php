@@ -16,7 +16,17 @@ class ProductRepository
 
     public function findById(int|string $id): ?Product
     {
-        return Product::with(['productImages', 'category', 'brand'])->find($id);
+        return Product::query()
+            ->with([
+                'productImages',
+                'category',
+                'brand',
+                'reviews' => fn($query) =>
+                $query->with('user')->latest(),
+            ])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->find($id);
     }
 
     public function create(array $data)

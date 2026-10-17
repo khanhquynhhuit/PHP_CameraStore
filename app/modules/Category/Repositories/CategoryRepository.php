@@ -3,34 +3,81 @@
 namespace App\Modules\Category\Repositories;
 
 use App\Models\Category;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class CategoryRepository
 {
     /**
-     * Nơi viết các truy vấn Database liên quan đến danh mục
+     * Lấy toàn bộ danh sách danh mục (kèm đếm số sản phẩm và hỗ trợ phân trang)
      */
-    public function getAll(array $filters = [])
+    public function layTatCaDanhMuc(array $boLoc = [], int $soLuongMoiTrang = 10): LengthAwarePaginator
     {
-        // TODO: Viết query lấy danh sách danh mục
+        $truyVan = Category::query()->withCount('products');
+
+        if (!empty($boLoc['tu_khoa'])) {
+            $tuKhoa = trim($boLoc['tu_khoa']);
+            $truyVan->where(function ($q) use ($tuKhoa) {
+                $q->where('name', 'like', "%{$tuKhoa}%")
+                  ->orWhere('slug', 'like', "%{$tuKhoa}%");
+            });
+        }
+
+        if (isset($boLoc['trang_thai']) && $boLoc['trang_thai'] !== '') {
+            $truyVan->where('is_active', (bool) $boLoc['trang_thai']);
+        }
+
+        return $truyVan->latest('id')->paginate($soLuongMoiTrang);
     }
 
-    public function findById(int|string $id)
+    /**
+     * Lấy danh sách danh mục đang kích hoạt (để hiển thị trên dropdown sản phẩm)
+     */
+    public function layDanhSachKichHoat(): Collection
     {
-        // TODO: Viết query tìm danh mục theo ID
+        return Category::query()
+            ->where('is_active', true)
+            ->orderBy('name', 'asc')
+            ->get();
     }
 
-    public function create(array $data)
+    /**
+     * Tìm danh mục theo mã định danh (ID)
+     */
+    public function timTheoId(int|string $maDanhMuc): ?Category
     {
-        // TODO: Viết query tạo danh mục
+        return Category::withCount('products')->find($maDanhMuc);
     }
 
-    public function update(Category|int|string $category, array $data)
+    /**
+     * Thêm mới danh mục vào cơ sở dữ liệu
+     */
+    public function taoDanhMuc(array $duLieu): Category
     {
-        // TODO: Viết query cập nhật danh mục
+        return Category::create($duLieu);
     }
 
-    public function delete(Category|int|string $category)
+    /**
+     * Cập nhật thông tin danh mục
+     */
+    public function capNhatDanhMuc(Category|int|string $danhMuc, array $duLieu): Category
     {
-        // TODO: Viết query xóa danh mục
+        $banGhi = $danhMuc instanceof Category ? $danhMuc : $this->timTheoId($danhMuc);
+
+        if ($banGhi) {
+            $banGhi->update($duLieu);
+        }
+
+        return $banGhi;
+    }
+
+    /**
+     * Xóa danh mục khỏi cơ sở dữ liệu
+     */
+    public function xoaDanhMuc(Category|int|string $danhMuc): bool
+    {
+        $banGhi = $danhMuc instanceof Category ? $danhMuc : $this->timTheoId($danhMuc);
+
+        return $banGhi ? (bool) $banGhi->delete() : false;
     }
 }

@@ -7,7 +7,9 @@ use App\Modules\Product\Requests\StoreProductRequest;
 use App\Modules\Product\Requests\UpdateProductRequest;
 use App\Modules\Product\Services\ProductService;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class AdminProductController extends Controller
 {
@@ -18,58 +20,106 @@ class AdminProductController extends Controller
     ) {}
 
     /**
-     * Display a listing of the resource.
+     * Hiển thị danh sách sản phẩm quản trị (kèm tìm kiếm, lọc đa tiêu chí và phân trang)
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        // TODO: Viết phần trả về danh sách sản phẩm quản trị
+        $boLoc = [
+            'keyword' => $request->query('keyword') ?? $request->query('search'),
+            'category_id' => $request->query('category_id'),
+            'brand_id' => $request->query('brand_id'),
+            'min_price' => $request->query('min_price'),
+            'max_price' => $request->query('max_price'),
+            'status' => $request->query('status'),
+            'sort' => $request->query('sort', 'moi_nhat'),
+        ];
+
+        $danhSachSanPham = $this->productService->timKiemVaLocSanPham($boLoc, 10);
+        $duLieuBoTro = $this->productService->layDuLieuForm();
+
+        return view('modules.Product.pages.index', array_merge([
+            'products' => $danhSachSanPham,
+            'danhSachSanPham' => $danhSachSanPham,
+            'boLoc' => $boLoc,
+        ], $duLieuBoTro));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Hiển thị giao diện form thêm mới máy ảnh
      */
-    public function create()
+    public function create(): View
     {
-        // TODO: Viết phần trả về view tạo sản phẩm
+        $duLieuBoTro = $this->productService->layDuLieuForm();
+
+        return view('modules.Product.pages.create', $duLieuBoTro);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Tiếp nhận dữ liệu Form Request và tạo mới sản phẩm kèm upload ảnh
      */
-    public function store(StoreProductRequest $request)
+    public function store(StoreProductRequest $request): RedirectResponse
     {
-        // TODO: Viết phần lưu sản phẩm mới
+        $duLieuDauVao = $request->validated();
+        $tepAnh = $request->file('image');
+
+        $this->productService->taoSanPhamMoi($duLieuDauVao, $tepAnh);
+
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Thêm mới sản phẩm máy ảnh thành công!');
     }
 
     /**
-     * Display the specified resource.
+     * Xem chi tiết sản phẩm
      */
-    public function show(string $id)
+    public function show(string $id): View
     {
-        // TODO: Viết phần trả về xem chi tiết sản phẩm
+        $sanPham = $this->productService->layChiTietSanPham($id);
+
+        return view('modules.Product.pages.show', [
+            'product' => $sanPham,
+            'sanPham' => $sanPham,
+        ]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Hiển thị form chỉnh sửa thông tin sản phẩm
      */
-    public function edit(string $id)
+    public function edit(string $id): View
     {
-        // TODO: Viết phần trả về form chỉnh sửa sản phẩm
+        $sanPham = $this->productService->layChiTietSanPham($id);
+        $duLieuBoTro = $this->productService->layDuLieuForm();
+
+        return view('modules.Product.pages.edit', array_merge([
+            'sanPham' => $sanPham,
+            'product' => $sanPham,
+        ], $duLieuBoTro));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Cập nhật thông tin sản phẩm và cập nhật ảnh mới nếu có
      */
-    public function update(UpdateProductRequest $request, string $id)
+    public function update(UpdateProductRequest $request, string $id): RedirectResponse
     {
-        // TODO: Viết phần cập nhật sản phẩm
+        $duLieuDauVao = $request->validated();
+        $tepAnh = $request->file('image');
+
+        $this->productService->capNhatSanPham($id, $duLieuDauVao, $tepAnh);
+
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Cập nhật thông tin sản phẩm thành công!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Xóa sản phẩm khỏi hệ thống
      */
-    public function destroy(string $id)
+    public function destroy(string $id): RedirectResponse
     {
-        // TODO: Viết phần xóa sản phẩm
+        $this->productService->xoaSanPham($id);
+
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Đã xóa sản phẩm thành công!');
     }
 }

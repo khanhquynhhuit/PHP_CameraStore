@@ -109,11 +109,28 @@ class ProductRepository
     }
 
     /**
-     * Tìm kiếm một sản phẩm theo ID kèm toàn bộ quan hệ liên kết
+     * Tìm kiếm một sản phẩm theo ID kèm toàn bộ quan hệ liên kết (đánh giá, ảnh, danh mục, thương hiệu)
      */
     public function timTheoId(int|string $maSanPham): ?Product
     {
-        return Product::with(['category', 'brand', 'productImages', 'reviews.user'])->find($maSanPham);
+        return Product::query()
+            ->with([
+                'productImages',
+                'category',
+                'brand',
+                'reviews' => fn($query) => $query->with('user')->latest(),
+            ])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->find($maSanPham);
+    }
+
+    /**
+     * Bí danh findById
+     */
+    public function findById(int|string $id): ?Product
+    {
+        return $this->timTheoId($id);
     }
 
     /**

@@ -10,7 +10,8 @@ use App\Modules\Product\Controllers\ProductController;
 use App\Modules\User\Controllers\AdminUserController;
 use App\Modules\User\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
+use App\Modules\Dashboard\Controllers\DashboardController;
+use App\Modules\Review\Controllers\ReviewController;
 // Trang chủ & Sản phẩm công khai
 Route::get('/', function () {
     return view('modules.Home.pages.index');
@@ -20,9 +21,9 @@ Route::get('/products/{id}', [ProductController::class, 'show'])->name('products
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 
 // Dashboard sau đăng nhập
-Route::get('/dashboard', function () {
-    return view('modules.Dashboard.pages.index');
-})->middleware(['auth'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware('auth')
+    ->name('dashboard');
 
 // Khu vực khách hàng (Customer)
 Route::middleware('auth')->group(function () {
@@ -48,6 +49,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('index');
         Route::get('/{id}', [OrderController::class, 'show'])->name('show');
         Route::post('/{id}/cancel', [OrderController::class, 'cancel'])->name('cancel');
+        Route::post('/{id}/received', [OrderController::class, 'received'])->name('received');
     });
 });
 
@@ -69,5 +71,10 @@ Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')
         Route::resource('users', AdminUserController::class);
     });
 });
-
+Route::middleware(['auth', 'role:customer'])
+    ->post(
+        '/products/{product}/reviews',
+        [ReviewController::class, 'store']
+    )
+    ->name('reviews.store');
 require __DIR__ . '/auth.php';

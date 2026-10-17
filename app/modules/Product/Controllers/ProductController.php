@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Product\Services\ProductService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
+use App\Modules\Review\Services\ReviewService;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -13,9 +14,9 @@ class ProductController extends Controller
     use ApiResponseTrait;
 
     public function __construct(
-        protected ProductService $productService
+        protected ProductService $productService,
+        protected ReviewService $reviewService
     ) {}
-
     /**
      * Hiển thị danh sách sản phẩm công khai dành cho khách hàng (Tìm kiếm, Lọc đa tiêu chí & Phân trang 9 sản phẩm/trang)
      */
@@ -48,13 +49,24 @@ class ProductController extends Controller
     /**
      * Hiển thị trang chi tiết một sản phẩm
      */
-    public function show(string $id): View
+    public function show(Request $request, string $id): View
     {
         $sanPham = $this->productService->layChiTietSanPham($id);
+
+        $reviewableOrders = collect();
+        $user = $request->user();
+
+        if ($user && $user->isCustomer()) {
+            $reviewableOrders = $this->reviewService->getReviewableOrders(
+                $user->id,
+                $sanPham->id
+            );
+        }
 
         return view('modules.Product.pages.show', [
             'product' => $sanPham,
             'sanPham' => $sanPham,
+            'reviewableOrders' => $reviewableOrders,
         ]);
     }
 }

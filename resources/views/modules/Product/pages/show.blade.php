@@ -1,13 +1,26 @@
 <x-app-layout>
     @php
-        $image = $product->primary_image;
-        $imageUrl = $image ? asset('storage/' . $image->image_url) : 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80';
-        $isOutOfStock = ($product->stock ?? 0) <= 0;
-        $discountPercent = 0;
-        if ($product->original_price && $product->original_price > $product->price) {
-            $discountPercent = round((($product->original_price - $product->price) / $product->original_price) * 100);
-        }
-    @endphp
+            $image = $product->primary_image;
+
+            $imageUrl = $image && $image->path
+                ? asset('storage/' . $image->path)
+                : 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80';
+
+            $isOutOfStock = ($product->stock ?? 0) <= 0;
+            $discountPercent = 0;
+
+            if (
+                $product->original_price
+                && $product->original_price > $product->price
+            ) {
+                $discountPercent = round(
+                    (
+                        ($product->original_price - $product->price)
+                        / $product->original_price
+                    ) * 100
+                );
+            }
+        @endphp
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <!-- Breadcrumb -->
@@ -57,7 +70,16 @@
                                 {{ $product->brand?->name ?? 'CHÍNH HÃNG' }}
                             </span>
                             <span class="text-ink/70">Mã SKU: {{ $product->sku ?? 'N/A' }}</span>
-                            <span class="text-warning-ink font-bold">★ 5.0 (Đánh giá tốt)</span>
+                            <a
+                                href="#reviews"
+                                class="text-warning-ink font-bold hover:underline"
+                            >
+                                ★ {{ number_format(
+                                    (float) ($product->reviews_avg_rating ?? 0),
+                                    1
+                                ) }}
+                                ({{ $product->reviews_count }} đánh giá)
+                            </a>
                         </div>
 
                         <h1 class="font-heading text-2xl sm:text-3xl font-semibold tracking-tight text-ink leading-tight">
@@ -190,4 +212,11 @@
             </div>
         </div>
     </div>
+    @include(
+    'modules.Review.components.review-section',
+    [
+        'product' => $product,
+        'reviewableOrders' => $reviewableOrders,
+    ]
+)
 </x-app-layout>

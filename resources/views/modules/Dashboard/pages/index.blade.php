@@ -18,6 +18,10 @@
 
             {{-- 1. GIAO DIỆN RIÊNG CỦA ADMIN --}}
             @if (auth()->user()->isAdmin())
+                @include(
+                    'modules.Dashboard.components.admin-statistics',
+                    ['dashboardData' => $dashboardData]
+                )
                 <div class="bg-base overflow-hidden shadow-sm sm:rounded-xl p-6 border border-ink/10 border-l-4 border-l-primary">
                     <h3 class="font-heading text-lg font-semibold tracking-tight text-ink mb-2">Khu vực Quản trị Hệ thống</h3>
                     <p class="text-sm text-ink/70 mb-4">Bạn có toàn quyền quản lý sản phẩm, danh mục, đơn hàng và tài khoản người dùng.</p>

@@ -18,47 +18,21 @@ class AdminOrderController extends Controller
         protected OrderStatusService $orderStatusService
     ) {}
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        $orders = $this->orderService->listAllOrders();
-
+        $orders = \App\Models\Order::with(['user', 'orderItems.product'])->latest()->paginate(15);
         return view('modules.Order.pages.admin-index', compact('orders'));
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        $order = $this->orderService->getOrderDetail($id);
-        $order->load(['statusHistories.user']);
-
+        $order = \App\Models\Order::with(['orderItems.product.productImages', 'user', 'statusHistories.user'])->findOrFail($id);
         return view('modules.Order.pages.admin-show', compact('order'));
     }
 
-    /**
-     * Update order status.
-     */
     public function updateStatus(UpdateOrderStatusRequest $request, string $id)
     {
-        try {
-            $this->orderStatusService->transitionTo(
-                $id,
-                $request->validated('status'),
-                $request->user()->id,
-                $request->validated('note')
-            );
-
-            return redirect()
-                ->route('admin.orders.show', $id)
-                ->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
-        } catch (\App\Exceptions\BusinessException $e) {
-            return redirect()
-                ->back()
-                ->with('error', $e->getMessage());
-        }
+        // TODO: Viết phần cập nhật trạng thái đơn hàng qua OrderStatusService (Tâm)
+        return redirect()->back()->with('error', 'Tính năng cập nhật trạng thái đơn đang được hoàn thiện!');
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Modules\Order\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Order\Requests\CheckoutRequest;
 use App\Modules\Order\Services\OrderService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
@@ -17,23 +16,11 @@ class CheckoutController extends Controller
     ) {}
 
     /**
-     * Display a listing of the resource (Checkout page hoặc xử lý mua ngay).
+     * Display a listing of the resource (Checkout page).
      */
     public function index(Request $request)
     {
-        $userId = $request->user()->id;
-
-        // Nếu request gửi trực tiếp thông tin từ giỏ hàng (selected_ids, payment_method, address_id...)
-        // Tiến hành tạo đơn hàng và thanh toán thành công luôn
-        if ($request->has('selected_ids')) {
-            $order = $this->orderService->checkout($userId, $request->all());
-
-            return view('modules.Order.pages.success', [
-                'order' => $order,
-            ]);
-        }
-
-        // Mặc định hiển thị trang checkout nếu vào trực tiếp
+        // TODO: Viết phần trả về thông tin checkout (Tâm)
         return view('modules.Order.pages.checkout');
     }
 
@@ -42,15 +29,7 @@ class CheckoutController extends Controller
      */
     public function store(Request $request)
     {
-        $userId = $request->user()->id;
-        $order = $this->orderService->checkout($userId, $request->all());
-
-        if ($request->wantsJson()) {
-            return $this->successResponse($order, 'Đặt hàng và thanh toán thành công!');
-        }
-
-        return view('modules.Order.pages.success', [
-            'order' => $order,
-        ]);
+        // TODO: Viết phần xử lý thanh toán / tạo đơn hàng (Tâm)
+        return redirect()->route('cart.index')->with('error', 'Tính năng đặt hàng đang được bạn Tâm hoàn thiện!');
     }
 }

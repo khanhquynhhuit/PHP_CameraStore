@@ -22,8 +22,7 @@ class UpdateOrderStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', 'string', \Illuminate\Validation\Rule::enum(\App\Models\Enums\OrderStatus::class)],
-            'note' => ['nullable', 'string', 'max:500'],
+            // TODO: Viết các quy tắc validate khi cập nhật trạng thái đơn hàng (Tâm)
         ];
     }
 }

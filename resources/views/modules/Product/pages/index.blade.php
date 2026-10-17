@@ -1,29 +1,89 @@
 <x-app-layout>
+    @php
+        $isAdmin = request()->routeIs('admin.products.*');
+    @endphp
+
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-heading font-semibold tracking-tight text-xl text-ink leading-tight">
-                {{ __('Danh sách sản phẩm') }}
-            </h2>
-            <x-button variant="primary" size="sm" :href="route('admin.products.create')">
-                + Thêm sản phẩm
-            </x-button>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h1 class="font-heading font-bold text-xl text-ink leading-tight">
+                    {{ $isAdmin ? __('Quản lý sản phẩm máy ảnh') : __('Danh sách máy ảnh & thiết bị số') }}
+                </h1>
+                <p class="text-xs text-ink/60 mt-0.5">
+                    {{ $isAdmin ? 'Quản lý kho hàng, cập nhật giá niêm yết, tồn kho và hình ảnh sản phẩm' : 'Khám phá các dòng máy ảnh Mirrorless, DSLR và ống kính chính hãng tại CameraStore.vn' }}
+                </p>
+            </div>
+            @if ($isAdmin)
+                <div>
+                    <a href="{{ route('admin.products.create') }}" 
+                       class="inline-flex items-center px-4 py-2 bg-primary text-cream rounded-xl text-sm font-semibold hover:bg-primary-dark transition shadow-sm">
+                        Thêm máy ảnh mới
+                    </a>
+                </div>
+            @endif
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-surface border border-ink/10 overflow-hidden shadow-sm sm:rounded-xl p-6">
-                @include('modules.Product.components.product-filter')
-                
-                {{-- TODO: Render danh sách sản phẩm --}}
-                <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {{-- @forelse ($products as $product)
-                        @include('modules.Product.components.product-card', ['product' => $product])
-                    @empty
-                        <p class="col-span-full text-center text-slate-500 py-8">Chưa có sản phẩm nào.</p>
-                    @endforelse --}}
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto space-y-6">
+            {{-- Bộ lọc & Tìm kiếm đa tiêu chí --}}
+            @include('modules.Product.components.product-filter')
+
+            {{-- Thông tin tóm tắt kết quả tìm kiếm --}}
+            <div class="flex items-center justify-between text-xs text-ink/70 px-1">
+                <div>
+                    Tìm thấy <strong class="text-primary font-bold text-sm">{{ $danhSachSanPham->total() }}</strong> sản phẩm
+                    @if (request('keyword') || request('search'))
+                        cho từ khóa: <span class="font-semibold text-ink">"{{ request('keyword') ?? request('search') }}"</span>
+                    @endif
                 </div>
+                @if ($danhSachSanPham->total() > 0)
+                    <div>
+                        Hiển thị {{ $danhSachSanPham->firstItem() }} - {{ $danhSachSanPham->lastItem() }}
+                    </div>
+                @endif
             </div>
+
+            {{-- Nội dung hiển thị --}}
+            @if ($isAdmin)
+                {{-- Giao diện Quản trị: Bảng quản lý chi tiết cho Admin & Nhân viên --}}
+                <div class="bg-surface border border-ink/10 rounded-2xl shadow-xs overflow-hidden">
+                    @include('modules.Product.components.product-table')
+
+                    @if ($danhSachSanPham->hasPages())
+                        <div class="px-6 py-4 border-t border-ink/10 bg-sand/20">
+                            {{ $danhSachSanPham->withQueryString()->links() }}
+                        </div>
+                    @endif
+                </div>
+            @else
+                {{-- Giao diện Khách hàng: Lưới hiển thị chuẩn 3 cột theo rubric phân công --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @forelse ($danhSachSanPham as $sp)
+                        @include('modules.Product.components.product-card', ['product' => $sp])
+                    @empty
+                        <div class="col-span-full py-16 text-center bg-surface border border-ink/10 rounded-2xl">
+                            <h3 class="font-heading font-bold text-lg text-ink">Không tìm thấy sản phẩm máy ảnh nào</h3>
+                            <p class="text-xs text-ink/60 mt-1 max-w-md mx-auto">
+                                Không có sản phẩm nào khớp với tiêu chí tìm kiếm hoặc khoảng giá của bạn. Vui lòng thử tìm kiếm với từ khóa khác hoặc bấm nút bỏ lọc.
+                            </p>
+                            <div class="mt-4">
+                                <a href="{{ route('products.index') }}" 
+                                   class="inline-flex items-center px-4 py-2 bg-sand text-ink rounded-xl text-xs font-semibold hover:bg-sand/70 transition">
+                                    Xem tất cả sản phẩm
+                                </a>
+                            </div>
+                        </div>
+                    @endforelse
+                </div>
+
+                {{-- Thanh phân trang giao diện Khách hàng --}}
+                @if ($danhSachSanPham->hasPages())
+                    <div class="mt-8 bg-surface p-4 border border-ink/10 rounded-2xl shadow-xs">
+                        {{ $danhSachSanPham->withQueryString()->links() }}
+                    </div>
+                @endif
+            @endif
         </div>
     </div>
 

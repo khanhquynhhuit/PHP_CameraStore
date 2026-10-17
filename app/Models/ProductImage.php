@@ -26,6 +26,14 @@ class ProductImage extends Model
     }
 
     /**
+     * Thuộc tính ảo trả về đường dẫn ảnh tương thích với các view
+     */
+    public function getImageUrlAttribute(): string
+    {
+        return $this->path;
+    }
+
+    /**
      * Sản phẩm sở hữu hình ảnh này
      */
     public function product(): BelongsTo

@@ -7,7 +7,9 @@ use App\Modules\Category\Requests\StoreCategoryRequest;
 use App\Modules\Category\Requests\UpdateCategoryRequest;
 use App\Modules\Category\Services\CategoryService;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
@@ -18,58 +20,85 @@ class CategoryController extends Controller
     ) {}
 
     /**
-     * Display a listing of the resource.
+     * Hiển thị danh sách danh mục sản phẩm (hỗ trợ tìm kiếm & phân trang)
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        // TODO: Viết phần trả về danh sách danh mục
+        $boLoc = [
+            'tu_khoa' => $request->query('search'),
+            'trang_thai' => $request->query('status'),
+        ];
+
+        $danhSachDanhMuc = $this->categoryService->layDanhSachDanhMuc($boLoc);
+
+        return view('modules.Category.pages.index', compact('danhSachDanhMuc', 'boLoc'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Hiển thị giao diện tạo mới danh mục
      */
-    public function create()
+    public function create(): View
     {
-        // TODO: Viết phần trả về view tạo danh mục
+        return view('modules.Category.pages.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Tiếp nhận dữ liệu Form Request và lưu danh mục mới
      */
-    public function store(StoreCategoryRequest $request)
+    public function store(StoreCategoryRequest $request): RedirectResponse
     {
-        // TODO: Viết phần lưu danh mục mới
+        $duLieuDauVao = $request->validated();
+
+        $this->categoryService->taoDanhMucMoi($duLieuDauVao);
+
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('success', 'Đã thêm danh mục mới thành công!');
     }
 
     /**
-     * Display the specified resource.
+     * Xem chi tiết một danh mục
      */
-    public function show(string $id)
+    public function show(string|int $id): View
     {
-        // TODO: Viết phần trả về xem chi tiết danh mục
+        $danhMuc = $this->categoryService->layChiTietDanhMuc($id);
+
+        return view('modules.Category.pages.show', compact('danhMuc'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Hiển thị form chỉnh sửa danh mục
      */
-    public function edit(string $id)
+    public function edit(string|int $id): View
     {
-        // TODO: Viết phần trả về form chỉnh sửa danh mục
+        $danhMuc = $this->categoryService->layChiTietDanhMuc($id);
+
+        return view('modules.Category.pages.edit', compact('danhMuc'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Tiếp nhận dữ liệu và cập nhật danh mục vào hệ thống
      */
-    public function update(UpdateCategoryRequest $request, string $id)
+    public function update(UpdateCategoryRequest $request, string|int $id): RedirectResponse
     {
-        // TODO: Viết phần cập nhật danh mục
+        $duLieuDauVao = $request->validated();
+
+        $this->categoryService->capNhatDanhMuc($id, $duLieuDauVao);
+
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('success', 'Đã cập nhật thông tin danh mục thành công!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Xóa danh mục khỏi hệ thống
      */
-    public function destroy(string $id)
+    public function destroy(string|int $id): RedirectResponse
     {
-        // TODO: Viết phần xóa danh mục
+        $this->categoryService->xoaDanhMuc($id);
+
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('success', 'Đã xóa danh mục thành công!');
     }
 }

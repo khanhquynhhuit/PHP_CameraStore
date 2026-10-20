@@ -68,6 +68,8 @@ Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')
 
     // Quản lý Người dùng (chỉ Admin)
     Route::middleware('role:admin')->group(function () {
+        Route::patch('users/{id}/toggle-status', [AdminUserController::class, 'toggleStatus'])->name('users.toggle-status');
+        Route::patch('users/{id}/role', [AdminUserController::class, 'updateRole'])->name('users.update-role');
         Route::resource('users', AdminUserController::class);
     });
 });

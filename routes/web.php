@@ -27,10 +27,13 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 // Khu vực khách hàng (Customer)
 Route::middleware('auth')->group(function () {
-    // Quản lý Profile
+    // Quản lý Profile & Địa chỉ nhận hàng
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/addresses', [ProfileController::class, 'storeAddress'])->name('profile.addresses.store');
+    Route::patch('/profile/addresses/{id}/default', [ProfileController::class, 'setDefaultAddress'])->name('profile.addresses.default');
+    Route::delete('/profile/addresses/{id}', [ProfileController::class, 'destroyAddress'])->name('profile.addresses.destroy');
 
     // Giỏ hàng
     Route::prefix('cart')->name('cart.')->group(function () {

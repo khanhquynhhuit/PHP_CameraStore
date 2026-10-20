@@ -96,4 +96,72 @@ class ProfileTest extends TestCase
 
         $this->assertNotNull($user->fresh());
     }
+
+    public function test_user_can_update_phone_number(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => 'Nguyễn Văn A',
+                'email' => $user->email,
+                'phone' => '0987654321',
+            ]);
+
+        $response->assertSessionHasNoErrors()->assertRedirect('/profile');
+        $this->assertSame('0987654321', $user->fresh()->phone);
+    }
+
+    public function test_user_can_add_and_manage_shipping_addresses(): void
+    {
+        $user = User::factory()->create();
+
+        // 1. Thêm địa chỉ mới
+        $response = $this
+            ->actingAs($user)
+            ->post('/profile/addresses', [
+                'receiver_name' => 'Nguyễn Văn Nhận',
+                'phone' => '0912345678',
+                'province' => 'Hà Nội',
+                'district' => 'Cầu Giấy',
+                'ward' => 'Dịch Vọng Hậu',
+                'detail' => 'Số 123 Đường Cầu Giấy',
+                'is_default' => 1,
+            ]);
+
+        $response->assertSessionHasNoErrors()->assertRedirect('/profile');
+        $this->assertCount(1, $user->fresh()->addresses);
+
+        $address = $user->fresh()->addresses->first();
+        $this->assertTrue($address->is_default);
+        $this->assertSame('Nguyễn Văn Nhận', $address->receiver_name);
+
+        // 2. Thêm địa chỉ thứ hai không mặc định
+        $this->actingAs($user)->post('/profile/addresses', [
+            'receiver_name' => 'Nguyễn Văn Công Ty',
+            'phone' => '0988888888',
+            'province' => 'Hà Nội',
+            'district' => 'Hoàn Kiếm',
+            'ward' => 'Tràng Tiền',
+            'detail' => 'Số 1 Tràng Tiền',
+            'is_default' => 0,
+        ]);
+
+        $address2 = $user->fresh()->addresses()->where('is_default', false)->first();
+        $this->assertNotNull($address2);
+
+        // 3. Đặt địa chỉ 2 làm mặc định
+        $this->actingAs($user)->patch("/profile/addresses/{$address2->id}/default")
+            ->assertRedirect('/profile');
+
+        $this->assertTrue($address2->fresh()->is_default);
+        $this->assertFalse($address->fresh()->is_default);
+
+        // 4. Xóa địa chỉ
+        $this->actingAs($user)->delete("/profile/addresses/{$address2->id}")
+            ->assertRedirect('/profile');
+
+        $this->assertCount(1, $user->fresh()->addresses);
+    }
 }

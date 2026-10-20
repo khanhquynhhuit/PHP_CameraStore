@@ -34,9 +34,10 @@ class ProfileUpdateRequest extends FormRequest
         return [
             'name.required' => 'Họ và tên không được để trống.',
             'name.max' => 'Họ và tên không được vượt quá 255 ký tự.',
-            'email.required' => 'Email không được để trống.',
-            'email.email' => 'Email không đúng định dạng.',
+            'email.required' => 'Địa chỉ email không được để trống.',
+            'email.email' => 'Địa chỉ email không đúng định dạng.',
             'email.unique' => 'Email này đã được sử dụng bởi tài khoản khác.',
+            'phone.max' => 'Số điện thoại không được vượt quá 20 ký tự.',
         ];
     }
 }

@@ -15,7 +15,7 @@
             name="email"
             label="Địa chỉ Email"
             type="email"
-            placeholder="example@camera.test"
+            placeholder="admin@camerastore.vn"
             required
             autofocus
             autocomplete="username"

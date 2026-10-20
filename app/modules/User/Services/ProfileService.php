@@ -50,7 +50,7 @@ class ProfileService
             'receiver_name' => $data['receiver_name'],
             'phone' => $data['phone'],
             'province' => $data['province'],
-            'district' => $data['district'],
+            'district' => $data['district'] ?? null,
             'ward' => $data['ward'],
             'detail' => $data['detail'],
             'is_default' => $isDefault,

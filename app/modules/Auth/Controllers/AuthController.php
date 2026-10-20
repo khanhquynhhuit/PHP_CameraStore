@@ -52,7 +52,11 @@ class AuthController extends Controller
             );
         }
 
-        return redirect()->intended(route('dashboard', absolute: false))->with('success', 'Đăng nhập thành công!');
+        $redirectUrl = ($user->isAdmin() || $user->isStaff())
+            ? route('dashboard', absolute: false)
+            : route('home', absolute: false);
+
+        return redirect()->intended($redirectUrl)->with('success', 'Đăng nhập thành công!');
     }
 
     /**
@@ -78,7 +82,7 @@ class AuthController extends Controller
             );
         }
 
-        return redirect(route('dashboard', absolute: false))->with('success', 'Đăng ký tài khoản thành công!');
+        return redirect(route('home', absolute: false))->with('success', 'Đăng ký tài khoản thành công!');
     }
 
     /**

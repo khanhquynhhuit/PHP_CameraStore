@@ -9,7 +9,7 @@
     <!-- Trạng thái gửi mail thành công -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('password.email') }}" class="space-y-4">
+    <form method="POST" action="{{ route('password.email') }}" class="space-y-4" novalidate>
         @csrf
 
         <!-- Email Address -->

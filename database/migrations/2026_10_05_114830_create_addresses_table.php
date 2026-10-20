@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('receiver_name', 100);
             $table->string('phone', 10);
             $table->string('province', 100);
-            $table->string('district', 100);
+            $table->string('district', 100)->nullable();
             $table->string('ward', 100);
             $table->string('detail', 255);
             $table->boolean('is_default')->default(false);

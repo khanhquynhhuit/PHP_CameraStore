@@ -1,4 +1,47 @@
-<div class="overflow-x-auto">
+<div x-data="{
+    modalOpen: false,
+    modalTitle: '',
+    modalMessage: '',
+    modalType: 'danger',
+    targetForm: null,
+    previousSelectValue: '',
+    targetSelect: null,
+
+    openConfirm(title, message, type, form) {
+        this.modalTitle = title;
+        this.modalMessage = message;
+        this.modalType = type;
+        this.targetForm = form;
+        this.targetSelect = null;
+        this.modalOpen = true;
+    },
+
+    openRoleConfirm(userName, newRoleLabel, form, selectEl, oldRole) {
+        this.modalTitle = 'Thay đổi vai trò người dùng';
+        this.modalMessage = 'Bạn có chắc chắn muốn thay đổi vai trò của <strong>' + userName + '</strong> sang <strong>' + newRoleLabel + '</strong>?';
+        this.modalType = 'primary';
+        this.targetForm = form;
+        this.targetSelect = selectEl;
+        this.previousSelectValue = oldRole;
+        this.modalOpen = true;
+    },
+
+    cancelModal() {
+        if (this.targetSelect && this.previousSelectValue) {
+            this.targetSelect.value = this.previousSelectValue;
+        }
+        this.modalOpen = false;
+        this.targetForm = null;
+        this.targetSelect = null;
+    },
+
+    submitAction() {
+        if (this.targetForm) {
+            this.targetForm.submit();
+        }
+        this.modalOpen = false;
+    }
+}" class="overflow-x-auto relative">
     <table class="min-w-full divide-y divide-ink/10 text-sm">
         <thead class="bg-sand/40">
             <tr>
@@ -54,7 +97,7 @@
                         {{ $u->phone ?: 'Chưa cập nhật' }}
                     </td>
 
-                    {{-- Cột Role Badge & Form cập nhật vai trò --}}
+                    {{-- Cột Role Badge & Form cập nhật vai trò qua Modal --}}
                     <td class="px-5 py-4 whitespace-nowrap text-xs">
                         <div class="flex items-center gap-2">
                             {{-- Badge vai trò hiện tại --}}
@@ -72,13 +115,13 @@
                                 </span>
                             @endif
 
-                            {{-- Form đổi quyền nhanh --}}
+                            {{-- Form đổi quyền nhanh qua Modal xác nhận --}}
                             @if (! $isCurrentUser)
                                 <form method="POST" action="{{ route('admin.users.update-role', $u->id) }}" class="inline-block ml-1">
                                     @csrf
                                     @method('PATCH')
                                     <select name="role" 
-                                            onchange="if(confirm('Bạn có chắc muốn đổi vai trò của {{ $u->name }}?')) { this.form.submit(); } else { this.value='{{ $roleValue }}'; }" 
+                                            x-on:change="openRoleConfirm('{{ addslashes($u->name) }}', $el.options[$el.selectedIndex].text, $el.closest('form'), $el, '{{ $roleValue }}')" 
                                             class="text-[11px] py-1 px-2 border border-ink/15 rounded-lg bg-base text-ink focus:border-primary focus:ring-primary cursor-pointer">
                                         @foreach ($roles as $r)
                                             <option value="{{ $r->value }}" {{ $roleValue === $r->value ? 'selected' : '' }}>
@@ -106,7 +149,7 @@
                         @endif
                     </td>
 
-                    {{-- Cột Hành động (Nút Khóa / Mở khóa) --}}
+                    {{-- Cột Hành động (Nút Khóa / Mở khóa qua Modal) --}}
                     <td class="px-5 py-4 whitespace-nowrap text-right text-xs">
                         @if ($isCurrentUser)
                             <span class="text-ink/40 text-xs italic px-3 py-1.5">
@@ -117,15 +160,15 @@
                                 @csrf
                                 @method('PATCH')
                                 @if ($u->is_active)
-                                    <button type="submit" 
-                                            onclick="return confirm('Bạn có chắc chắn muốn KHÓA tài khoản của {{ $u->name }}? Khi bị khóa, người dùng sẽ không thể đăng nhập vào hệ thống.')"
+                                    <button type="button" 
+                                            x-on:click="openConfirm('Khóa tài khoản người dùng', 'Bạn có chắc chắn muốn KHÓA tài khoản của <strong>{{ addslashes($u->name) }}</strong>? Khi bị khóa, người dùng sẽ không thể đăng nhập vào hệ thống.', 'danger', $el.closest('form'))"
                                             class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-danger/30 text-danger-ink bg-danger/10 hover:bg-danger/25 transition font-semibold">
                                         <span>🔒</span>
                                         <span>Khóa tài khoản</span>
                                     </button>
                                 @else
-                                    <button type="submit" 
-                                            onclick="return confirm('Bạn có chắc chắn muốn MỞ KHÓA tài khoản của {{ $u->name }}?')"
+                                    <button type="button" 
+                                            x-on:click="openConfirm('Mở khóa tài khoản', 'Bạn có chắc chắn muốn MỞ KHÓA tài khoản của <strong>{{ addslashes($u->name) }}</strong>? Người dùng sẽ có thể đăng nhập lại bình thường.', 'primary', $el.closest('form'))"
                                             class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-success/40 text-success-ink bg-success/15 hover:bg-success/30 transition font-semibold">
                                         <span>🔓</span>
                                         <span>Mở khóa</span>
@@ -156,4 +199,51 @@
             @endforelse
         </tbody>
     </table>
+
+    {{-- Modal Hộp thoại xác nhận thao tác Javascript/Alpine.js chuẩn đẹp --}}
+    <div x-show="modalOpen" 
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/50 backdrop-blur-xs"
+         style="display: none;">
+        <div x-show="modalOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             x-on:click.outside="cancelModal()"
+             class="bg-surface border border-ink/10 rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+            
+            <div class="flex items-start gap-3.5">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                     :class="modalType === 'danger' ? 'bg-danger/25 text-danger-ink border border-danger/30' : 'bg-primary/20 text-primary-dark border border-primary/30'">
+                    <span x-text="modalType === 'danger' ? '🔒' : '🛡️'"></span>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <h3 class="font-heading font-bold text-base text-ink" x-text="modalTitle"></h3>
+                    <p class="text-xs text-ink/75 mt-1.5 leading-relaxed" x-html="modalMessage"></p>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-3 border-t border-ink/10">
+                <button type="button" 
+                        x-on:click="cancelModal()"
+                        class="px-4 py-2 text-xs font-semibold rounded-xl bg-base border border-ink/15 text-ink hover:bg-ink/5 transition">
+                    Hủy bỏ
+                </button>
+                <button type="button" 
+                        x-on:click="submitAction()"
+                        :class="modalType === 'danger' ? 'bg-danger text-danger-ink hover:bg-danger/80' : 'bg-primary text-cream hover:bg-primary-dark'"
+                        class="px-4 py-2 text-xs font-semibold rounded-xl transition shadow-xs font-heading">
+                    Xác nhận thực hiện
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

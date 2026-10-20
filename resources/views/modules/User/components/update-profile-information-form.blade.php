@@ -12,7 +12,7 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-4">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-4" novalidate>
         @csrf
         @method('patch')
 

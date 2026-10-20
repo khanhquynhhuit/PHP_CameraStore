@@ -17,9 +17,9 @@ class UserSeeder extends Seeder
     {
         $defaultPassword = Hash::make('password');
 
-        // 1. Quản trị viên hệ thống (Admin)
+        // 1. Quản trị viên hệ thống chuẩn theo đề bài (Admin)
         User::query()->firstOrCreate(
-            ['email' => 'admin@camera.test'],
+            ['email' => 'admin@camerastore.vn'],
             [
                 'name' => 'Quản trị viên hệ thống',
                 'password' => $defaultPassword,
@@ -30,9 +30,9 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // 2. Nhân viên bán hàng / xử lý đơn (Staff)
+        // 2. Nhân viên bán hàng chuẩn theo đề bài (Staff)
         User::query()->firstOrCreate(
-            ['email' => 'staff@camera.test'],
+            ['email' => 'staff@camerastore.vn'],
             [
                 'name' => 'Nhân viên bán hàng',
                 'password' => $defaultPassword,
@@ -43,13 +43,50 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // 3. Khách hàng chính dùng cho việc test đăng nhập (Customer)
+        // 3. Khách hàng chuẩn theo đề bài (Customer)
         User::query()->firstOrCreate(
-            ['email' => 'customer@camera.test'],
+            ['email' => 'customer@gmail.com'],
             [
                 'name' => 'Nguyễn Văn Khách',
                 'password' => $defaultPassword,
                 'phone' => '0903456789',
+                'role' => RoleName::CUSTOMER,
+                'is_active' => true,
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // Giữ lại các tài khoản @camera.test cho môi trường local/legacy seeders
+        User::query()->firstOrCreate(
+            ['email' => 'admin@camera.test'],
+            [
+                'name' => 'Admin Test',
+                'password' => $defaultPassword,
+                'phone' => '0901234568',
+                'role' => RoleName::ADMIN,
+                'is_active' => true,
+                'email_verified_at' => now(),
+            ]
+        );
+
+        User::query()->firstOrCreate(
+            ['email' => 'staff@camera.test'],
+            [
+                'name' => 'Staff Test',
+                'password' => $defaultPassword,
+                'phone' => '0902345679',
+                'role' => RoleName::STAFF,
+                'is_active' => true,
+                'email_verified_at' => now(),
+            ]
+        );
+
+        User::query()->firstOrCreate(
+            ['email' => 'customer@camera.test'],
+            [
+                'name' => 'Customer Test',
+                'password' => $defaultPassword,
+                'phone' => '0903456780',
                 'role' => RoleName::CUSTOMER,
                 'is_active' => true,
                 'email_verified_at' => now(),

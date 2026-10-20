@@ -1,25 +1,40 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+    <div class="mb-6 text-center">
+        <h1 class="font-heading text-2xl font-semibold tracking-tight text-ink">Khôi phục mật khẩu</h1>
+        <p class="text-sm text-ink/70 mt-1">
+            Nhập email đăng ký tài khoản của bạn. CameraStore sẽ gửi liên kết an toàn để bạn thiết lập mật khẩu mới.
+        </p>
     </div>
 
-    <!-- Session Status -->
+    <!-- Trạng thái gửi mail thành công -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('password.email') }}">
+    <form method="POST" action="{{ route('password.email') }}" class="space-y-4">
         @csrf
 
         <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <x-form-input
+            name="email"
+            label="Địa chỉ Email của bạn"
+            type="email"
+            :value="old('email')"
+            placeholder="example@camerastore.vn"
+            required
+            autofocus
+            autocomplete="username"
+        />
+
+        <div class="pt-2">
+            <x-button variant="primary" size="lg" type="submit" class="w-full">
+                Gửi liên kết khôi phục mật khẩu
+            </x-button>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
+        <div class="mt-4 text-center text-sm text-ink/70">
+            Đã nhớ lại mật khẩu?
+            <a href="{{ route('login') }}" class="font-semibold text-ink underline hover:text-ink/80">
+                Quay lại Đăng nhập
+            </a>
         </div>
     </form>
 </x-guest-layout>

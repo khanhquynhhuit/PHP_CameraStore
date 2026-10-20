@@ -17,7 +17,7 @@ class StoreAddressRequest extends FormRequest
             'receiver_name' => ['required', 'string', 'max:100'],
             'phone' => ['required', 'string', 'max:15'],
             'province' => ['required', 'string', 'max:100'],
-            'district' => ['required', 'string', 'max:100'],
+            'district' => ['nullable', 'string', 'max:100'],
             'ward' => ['required', 'string', 'max:100'],
             'detail' => ['required', 'string', 'max:255'],
             'is_default' => ['nullable', 'boolean'],

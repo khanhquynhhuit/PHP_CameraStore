@@ -198,7 +198,7 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                     @endif
                                 </div>
                                 <p class="text-xs text-ink/70 mt-0.5 line-clamp-2">
-                                    {{ $addr->detail }}, {{ $addr->ward }}, {{ $addr->district }}, {{ $addr->province }}
+                                    {{ $addr->detail }}, {{ $addr->ward }}{{ $addr->district ? ', ' . $addr->district : '' }}, {{ $addr->province }}
                                 </p>
                             </div>
                         </label>

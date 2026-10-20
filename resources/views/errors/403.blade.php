@@ -20,8 +20,16 @@
         <h2 class="font-heading text-xl font-semibold tracking-tight text-ink mb-2">Truy cập bị từ chối</h2>
         <p class="text-ink/70 text-sm mb-6">{{ $message ?? 'Bạn không có đủ quyền để truy cập vào tài nguyên này.' }}</p>
         <div class="flex gap-3 justify-center">
-            <x-button variant="secondary" size="md" :href="url()->previous()">Quay lại</x-button>
-            <x-button variant="primary" size="md" :href="url('/')">Trang chủ</x-button>
+            <x-button variant="secondary" size="md" :href="url()->previous()">Quay lại trang trước</x-button>
+            @auth
+                @if (auth()->user()->isAdmin() || auth()->user()->isStaff())
+                    <x-button variant="primary" size="md" :href="route('dashboard')">Về Bảng điều khiển</x-button>
+                @else
+                    <x-button variant="primary" size="md" :href="route('home')">Về Trang chủ mua sắm</x-button>
+                @endif
+            @else
+                <x-button variant="primary" size="md" :href="route('home')">Về Trang chủ</x-button>
+            @endauth
         </div>
     </div>
 </body>

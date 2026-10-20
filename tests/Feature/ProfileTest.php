@@ -163,5 +163,23 @@ class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertCount(1, $user->fresh()->addresses);
+
+        // 5. Thêm địa chỉ chuẩn 2025 (Tỉnh / Phường Xã, không bắt buộc Quận/Huyện)
+        $response2025 = $this
+            ->actingAs($user)
+            ->post('/profile/addresses', [
+                'receiver_name' => 'Trần Thị B',
+                'phone' => '0909090909',
+                'province' => 'Thành phố Hồ Chí Minh',
+                'ward' => 'Phường Bến Nghé',
+                'detail' => 'Số 10 Nguyễn Huệ',
+            ]);
+
+        $response2025->assertSessionHasNoErrors()->assertRedirect('/profile');
+        $addr2025 = $user->fresh()->addresses()->where('receiver_name', 'Trần Thị B')->first();
+        $this->assertNotNull($addr2025);
+        $this->assertNull($addr2025->district);
+        $this->assertSame('Thành phố Hồ Chí Minh', $addr2025->province);
+        $this->assertSame('Phường Bến Nghé', $addr2025->ward);
     }
 }

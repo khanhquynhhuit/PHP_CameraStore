@@ -4,7 +4,7 @@
         <p class="text-sm text-ink/70 mt-1">Tạo tài khoản khách hàng mới tại Camera Store</p>
     </div>
 
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register') }}" novalidate>
         @csrf
 
         <!-- Name -->

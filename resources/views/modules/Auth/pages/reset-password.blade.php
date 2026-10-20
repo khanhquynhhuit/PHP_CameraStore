@@ -6,7 +6,7 @@
         </p>
     </div>
 
-    <form method="POST" action="{{ route('password.store') }}" class="space-y-4">
+    <form method="POST" action="{{ route('password.store') }}" class="space-y-4" novalidate>
         @csrf
 
         <!-- Password Reset Token -->

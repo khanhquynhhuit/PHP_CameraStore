@@ -3,7 +3,6 @@
 namespace App\Modules\Order\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
 use App\Modules\Order\Services\OrderService;
 use App\Modules\Order\Services\OrderStatusService;
 use App\Traits\ApiResponseTrait;
@@ -18,47 +17,44 @@ class OrderController extends Controller
         protected OrderStatusService $orderStatusService
     ) {}
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        // TODO: Viết phần trả về danh sách đơn hàng của khách hàng (Tâm)
-        $orders = Order::where('user_id', $request->user()->id)->latest()->paginate(10);
-
+        $orders = $this->orderService->listCustomerOrders($request->user()->id, $request->all());
         return view('modules.Order.pages.index', compact('orders'));
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Request $request, string $id)
     {
-        // TODO: Viết phần trả về chi tiết đơn hàng (Tâm)
-        $order = Order::with(['orderItems.product.productImages', 'user'])->find($id);
+        $order = $this->orderService->getOrderDetail($id);
 
-        if (!$order) {
-            abort(404, 'Không tìm thấy đơn hàng.');
+        if ($order->user_id !== $request->user()->id) {
+            abort(403, 'Bạn không có quyền xem đơn hàng này.');
         }
 
         return view('modules.Order.pages.show', compact('order'));
     }
 
-    /**
-     * Cancel the specified order.
-     */
     public function cancel(Request $request, string $id)
     {
-        // TODO: Viết phần xử lý hủy đơn hàng (Tâm)
-        return redirect()->back()->with('error', 'Tính năng hủy đơn hàng đang được bạn Tâm hoàn thiện!');
+        try {
+            $this->orderStatusService->cancelOrderByCustomer($id, $request->user()->id, $request->input('cancel_reason'));
+            return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
-    /**
-     * Khách hàng xác nhận đã nhận được hàng
-     */
     public function received(Request $request, string $id)
     {
-        // TODO: Viết phần xác nhận đã nhận hàng (Tâm)
-        return redirect()->back()->with('error', 'Tính năng xác nhận nhận hàng đang được bạn Tâm hoàn thiện!');
+        try {
+            $order = $this->orderService->getOrderDetail($id);
+            if ($order->user_id !== $request->user()->id) abort(403);
+
+            // Chuyển sang trạng thái 'completed' (Hoàn tất)
+            $this->orderStatusService->transitionTo($order, 'completed', $request->user()->id, 'Khách hàng xác nhận đã nhận hàng');
+            return redirect()->back()->with('success', 'Cảm ơn bạn đã mua hàng!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }

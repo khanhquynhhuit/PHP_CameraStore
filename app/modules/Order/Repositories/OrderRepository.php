@@ -11,26 +11,51 @@ class OrderRepository
      */
     public function getOrdersByUserId(int|string $userId, array $filters = [])
     {
-        // TODO: Viết query lấy danh sách đơn hàng của khách hàng
+        // Thêm query() để VS Code nhận diện đúng chuẩn Eloquent Builder, hết báo vàng
+        $query = Order::query()->with(['items.product', 'statusHistories'])->where('user_id', $userId);
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        return $query->latest()->paginate(10);
     }
 
     public function getAll(array $filters = [])
     {
-        // TODO: Viết query lấy toàn bộ đơn hàng (Admin/Staff)
+        $query = Order::query()->with(['user', 'items', 'statusHistories.changer']);
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        return $query->latest()->paginate(15);
     }
 
     public function findById(int|string $id)
     {
-        // TODO: Viết query tìm đơn hàng theo ID
+        return Order::query()->with(['user', 'items.product', 'statusHistories.changer'])->findOrFail($id);
     }
 
     public function create(array $orderData, array $itemsData = [])
     {
-        // TODO: Viết query tạo mới đơn hàng và chi tiết đơn hàng
+        $order = Order::create($orderData);
+
+        if (!empty($itemsData)) {
+            $order->items()->createMany($itemsData);
+        }
+
+        return $order;
     }
 
     public function update(Order|int|string $order, array $data)
     {
-        // TODO: Viết query cập nhật thông tin đơn hàng
+        if (!$order instanceof Order) {
+            $order = Order::findOrFail($order);
+        }
+
+        $order->update($data);
+
+        return $order;
     }
 }

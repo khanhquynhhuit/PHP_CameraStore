@@ -20,19 +20,28 @@ class AdminOrderController extends Controller
 
     public function index(Request $request)
     {
-        $orders = \App\Models\Order::with(['user', 'orderItems.product'])->latest()->paginate(15);
+        $orders = $this->orderService->listAllOrders($request->all());
         return view('modules.Order.pages.admin-index', compact('orders'));
     }
 
     public function show(string $id)
     {
-        $order = \App\Models\Order::with(['orderItems.product.productImages', 'user', 'statusHistories.user'])->findOrFail($id);
+        $order = $this->orderService->getOrderDetail($id);
         return view('modules.Order.pages.admin-show', compact('order'));
     }
 
     public function updateStatus(UpdateOrderStatusRequest $request, string $id)
     {
-        // TODO: Viết phần cập nhật trạng thái đơn hàng qua OrderStatusService (Tâm)
-        return redirect()->back()->with('error', 'Tính năng cập nhật trạng thái đơn đang được hoàn thiện!');
+        try {
+            $this->orderStatusService->transitionTo(
+                $id, 
+                $request->input('status'), 
+                $request->user()->id, // ID của Admin/Staff đang thao tác
+                $request->input('note')
+            );
+            return redirect()->back()->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }

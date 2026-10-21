@@ -3,6 +3,7 @@
 namespace App\Modules\Order\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CheckoutRequest; // Thêm Form Request để validate
 use App\Modules\Order\Services\OrderService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
@@ -15,21 +16,21 @@ class CheckoutController extends Controller
         protected OrderService $orderService
     ) {}
 
-    /**
-     * Display a listing of the resource (Checkout page).
-     */
     public function index(Request $request)
     {
-        // TODO: Viết phần trả về thông tin checkout (Tâm)
         return view('modules.Order.pages.checkout');
     }
 
-    /**
-     * Store a newly created resource in storage (Process checkout).
-     */
-    public function store(Request $request)
+    public function store(CheckoutRequest $request) // Dùng CheckoutRequest bắt lỗi Tiếng Việt
     {
-        // TODO: Viết phần xử lý thanh toán / tạo đơn hàng (Tâm)
-        return redirect()->route('cart.index')->with('error', 'Tính năng đặt hàng đang được bạn Tâm hoàn thiện!');
+        try {
+            $order = $this->orderService->checkout($request->user()->id, $request->validated());
+            
+            // Đặt hàng xong chuyển tới trang chi tiết đơn hàng
+            return redirect()->route('orders.show', $order->id)
+                             ->with('success', 'Đặt hàng thành công!');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
     }
 }

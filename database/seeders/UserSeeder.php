@@ -93,9 +93,27 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // 4. Thêm 5 khách hàng ngẫu nhiên bằng factory
-        User::factory()->count(5)->customer()->create([
-            'password' => $defaultPassword,
-        ]);
+        // 4. Thêm 5 khách hàng cố định tên tiếng Việt
+        $customers = [
+            ['name' => 'Trần Thị Mai',   'email' => 'mai.tran@gmail.com',  'phone' => '0911111111'],
+            ['name' => 'Lê Hoàng Nam',   'email' => 'nam.le@gmail.com',    'phone' => '0922222222'],
+            ['name' => 'Phạm Minh Tuấn', 'email' => 'tuan.pham@gmail.com', 'phone' => '0933333333'],
+            ['name' => 'Võ Ngọc Hân',    'email' => 'han.vo@gmail.com',    'phone' => '0944444444'],
+            ['name' => 'Đặng Quốc Bảo',  'email' => 'bao.dang@gmail.com',  'phone' => '0955555555'],
+        ];
+
+        foreach ($customers as $c) {
+            User::query()->firstOrCreate(
+                ['email' => $c['email']],
+                [
+                    'name' => $c['name'],
+                    'password' => $defaultPassword,
+                    'phone' => $c['phone'],
+                    'role' => RoleName::CUSTOMER,
+                    'is_active' => true,
+                    'email_verified_at' => now(),
+                ]
+            );
+        }
     }
 }

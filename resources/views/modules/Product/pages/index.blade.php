@@ -14,7 +14,14 @@
                 </p>
             </div>
             @if ($isAdmin)
-                <div>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('admin.inventory.index') }}" 
+                       class="inline-flex items-center gap-1.5 px-3.5 py-2 border border-ink/15 bg-surface text-ink rounded-xl text-sm font-semibold hover:bg-sand/40 hover:text-primary transition shadow-2xs">
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                        <span>Quản lý kho hàng (Đợt 3)</span>
+                    </a>
                     <a href="{{ route('admin.products.create') }}" 
                        class="inline-flex items-center px-4 py-2 bg-primary text-cream rounded-xl text-sm font-semibold hover:bg-primary-dark transition shadow-sm">
                         Thêm máy ảnh mới

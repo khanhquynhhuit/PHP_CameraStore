@@ -34,6 +34,7 @@ class ProductService
             'gia_den' => $boLoc['max_price'] ?? $boLoc['gia_den'] ?? null,
             'status' => $boLoc['status'] ?? null,
             'con_hang' => $boLoc['in_stock'] ?? $boLoc['con_hang'] ?? null,
+            'stock_status' => $boLoc['stock_status'] ?? $boLoc['trang_thai_kho'] ?? null,
             'sap_xep' => $boLoc['sort'] ?? $boLoc['sap_xep'] ?? 'moi_nhat',
         ];
 
@@ -188,5 +189,27 @@ class ProductService
         $sanPham = $this->layChiTietSanPham($maSanPham);
 
         return $this->productRepository->xoaSanPham($sanPham);
+    }
+
+    /**
+     * Lấy dữ liệu thống kê kho hàng cho màn hình Admin Quản lý kho (Đợt 3)
+     */
+    public function layThongKeKhoHang(): array
+    {
+        return $this->productRepository->layThongKeKhoHang();
+    }
+
+    /**
+     * Cập nhật nhanh số lượng tồn kho của một sản phẩm (Đợt 3)
+     */
+    public function capNhatNhanhTonKho(int|string $maSanPham, int $soLuongTonKho): Product
+    {
+        if ($soLuongTonKho < 0) {
+            throw new BusinessException('Số lượng tồn kho không được là số âm!');
+        }
+
+        $sanPham = $this->layChiTietSanPham($maSanPham);
+
+        return $this->productRepository->capNhatTonKho($sanPham, $soLuongTonKho);
     }
 }

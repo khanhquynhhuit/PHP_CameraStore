@@ -7,6 +7,7 @@ use App\Modules\Product\Requests\StoreProductRequest;
 use App\Modules\Product\Requests\UpdateProductRequest;
 use App\Modules\Product\Services\ProductService;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -121,5 +122,59 @@ class AdminProductController extends Controller
         return redirect()
             ->route('admin.products.index')
             ->with('success', 'Đã xóa sản phẩm thành công!');
+    }
+
+    /**
+     * Màn hình Quản lý kho máy ảnh (Đợt 3: Lọc máy ảnh sắp hết hàng, cập nhật nhanh tồn kho)
+     */
+    public function inventory(Request $request): View
+    {
+        $boLoc = [
+            'keyword' => $request->query('keyword') ?? $request->query('search'),
+            'category_id' => $request->query('category_id'),
+            'brand_id' => $request->query('brand_id'),
+            'stock_status' => $request->query('stock_status', 'all'),
+            'sort' => $request->query('sort', 'stock_asc'),
+        ];
+
+        $thongKeKho = $this->productService->layThongKeKhoHang();
+        $danhSachSanPham = $this->productService->timKiemVaLocSanPham($boLoc, 15);
+        $duLieuBoTro = $this->productService->layDuLieuForm();
+
+        return view('modules.Product.pages.inventory', array_merge([
+            'products' => $danhSachSanPham,
+            'danhSachSanPham' => $danhSachSanPham,
+            'thongKeKho' => $thongKeKho,
+            'boLoc' => $boLoc,
+        ], $duLieuBoTro));
+    }
+
+    /**
+     * Cập nhật nhanh số lượng tồn kho (Đợt 3: Inline quick stock update)
+     */
+    public function quickUpdateStock(Request $request, string $id): RedirectResponse|JsonResponse
+    {
+        $validated = $request->validate([
+            'stock' => ['required', 'integer', 'min:0'],
+        ], [
+            'stock.required' => 'Vui lòng nhập số lượng tồn kho.',
+            'stock.integer' => 'Số lượng tồn kho phải là số nguyên.',
+            'stock.min' => 'Số lượng tồn kho không được nhỏ hơn 0.',
+        ]);
+
+        $sanPham = $this->productService->capNhatNhanhTonKho($id, (int) $validated['stock']);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Đã cập nhật tồn kho máy ảnh [{$sanPham->name}] thành {$sanPham->stock} chiếc!",
+                'product' => [
+                    'id' => $sanPham->id,
+                    'stock' => $sanPham->stock,
+                ],
+            ]);
+        }
+
+        return redirect()->back()->with('success', "Đã cập nhật tồn kho máy ảnh [{$sanPham->name}] thành {$sanPham->stock} chiếc!");
     }
 }

@@ -61,6 +61,10 @@ Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')
     // Quản lý Sản phẩm
     Route::resource('products', AdminProductController::class);
 
+    // Quản lý kho máy ảnh (Đợt 3: Lọc sắp hết hàng & cập nhật nhanh tồn kho)
+    Route::get('inventory', [AdminProductController::class, 'inventory'])->name('inventory.index');
+    Route::patch('inventory/{id}/quick-update', [AdminProductController::class, 'quickUpdateStock'])->name('inventory.quick-update');
+
     // Quản lý Danh mục
     Route::resource('categories', CategoryController::class);
 

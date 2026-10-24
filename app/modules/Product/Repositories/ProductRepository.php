@@ -62,14 +62,29 @@ class ProductRepository
             $truyVan->where('status', $boLoc['status']);
         }
 
-        // 6. Lọc sản phẩm còn hàng
-        if (! empty($boLoc['con_hang'])) {
+        // 6. Lọc theo trạng thái kho hàng
+        $trangThaiKho = $boLoc['stock_status'] ?? $boLoc['trang_thai_kho'] ?? null;
+        if ($trangThaiKho === 'low_stock' || $trangThaiKho === 'sap_het') {
+            $truyVan->where('stock', '>', 0)->where('stock', '<', 5);
+        } elseif ($trangThaiKho === 'out_of_stock' || $trangThaiKho === 'het_hang') {
+            $truyVan->where('stock', '<=', 0);
+        } elseif ($trangThaiKho === 'in_stock' || $trangThaiKho === 'con_hang') {
+            $truyVan->where('stock', '>=', 5);
+        } elseif (! empty($boLoc['con_hang'])) {
             $truyVan->where('stock', '>', 0);
         }
 
         // 7. Sắp xếp thứ tự
         $kieuSapXep = $boLoc['sap_xep'] ?? 'moi_nhat';
         switch ($kieuSapXep) {
+            case 'stock_asc':
+            case 'ton_kho_tang':
+                $truyVan->orderBy('stock', 'asc');
+                break;
+            case 'stock_desc':
+            case 'ton_kho_giam':
+                $truyVan->orderBy('stock', 'desc');
+                break;
             case 'gia_tang_dan':
             case 'price_asc':
                 $truyVan->orderBy('price', 'asc');
@@ -189,5 +204,33 @@ class ProductRepository
             'is_primary' => true,
             'sort_order' => 0,
         ]);
+    }
+
+    /**
+     * Lấy thống kê tổng quan về kho hàng máy ảnh (Đợt 3: Màn hình quản lý kho)
+     */
+    public function layThongKeKhoHang(): array
+    {
+        return [
+            'tong_san_pham' => Product::count(),
+            'tong_ton_kho' => (int) Product::sum('stock'),
+            'sap_het_hang' => Product::where('stock', '>', 0)->where('stock', '<', 5)->count(),
+            'da_het_hang' => Product::where('stock', '<=', 0)->count(),
+            'an_toan' => Product::where('stock', '>=', 5)->count(),
+        ];
+    }
+
+    /**
+     * Cập nhật nhanh số lượng tồn kho của sản phẩm
+     */
+    public function capNhatTonKho(Product|int|string $sanPham, int $soLuongTonKho): Product
+    {
+        $banGhi = $sanPham instanceof Product ? $sanPham : $this->timTheoId($sanPham);
+
+        if ($banGhi) {
+            $banGhi->update(['stock' => max(0, $soLuongTonKho)]);
+        }
+
+        return $banGhi;
     }
 }

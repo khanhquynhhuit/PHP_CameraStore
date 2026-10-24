@@ -1,7 +1,7 @@
 @php
     $isAdminRoute = request()->routeIs('admin.products.*');
     $actionRoute = $isAdminRoute ? route('admin.products.index') : route('products.index');
-    $hasActiveFilter = request()->filled('keyword') || request()->filled('search') || request()->filled('category_id') || request()->filled('brand_id') || request()->filled('brand') || request()->filled('min_price') || request()->filled('max_price') || (request('sort') && request('sort') !== 'moi_nhat') || request()->filled('status');
+    $hasActiveFilter = request()->filled('keyword') || request()->filled('search') || request()->filled('category_id') || request()->filled('brand_id') || request()->filled('brand') || request()->filled('min_price') || request()->filled('max_price') || (request('sort') && request('sort') !== 'moi_nhat') || request()->filled('status') || request()->filled('stock_status');
 @endphp
 
 <div class="bg-surface border border-ink/10 p-5 rounded-2xl shadow-xs space-y-4">
@@ -69,6 +69,10 @@
                     <option value="gia_tang_dan" {{ request('sort') === 'gia_tang_dan' ? 'selected' : '' }}>Giá: Thấp đến Cao</option>
                     <option value="gia_giam_dan" {{ request('sort') === 'gia_giam_dan' ? 'selected' : '' }}>Giá: Cao đến Thấp</option>
                     <option value="ten_a_z" {{ request('sort') === 'ten_a_z' ? 'selected' : '' }}>Tên: A - Z</option>
+                    @if ($isAdminRoute)
+                        <option value="stock_asc" {{ request('sort') === 'stock_asc' ? 'selected' : '' }}>Tồn kho: Ít nhất trước</option>
+                        <option value="stock_desc" {{ request('sort') === 'stock_desc' ? 'selected' : '' }}>Tồn kho: Nhiều nhất trước</option>
+                    @endif
                 </select>
             </div>
         </div>
@@ -76,7 +80,7 @@
         {{-- Dòng 2: Khoảng giá & Trạng thái --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-end pt-3 border-t border-ink/10 mt-3">
             {{-- Giá từ --}}
-            <div class="lg:col-span-3">
+            <div class="{{ $isAdminRoute ? 'lg:col-span-2' : 'lg:col-span-3' }}">
                 <label for="min_price" class="block text-xs font-semibold text-ink/70 mb-1">
                     Giá tối thiểu (VNĐ)
                 </label>
@@ -91,7 +95,7 @@
             </div>
 
             {{-- Giá đến --}}
-            <div class="lg:col-span-3">
+            <div class="{{ $isAdminRoute ? 'lg:col-span-2' : 'lg:col-span-3' }}">
                 <label for="max_price" class="block text-xs font-semibold text-ink/70 mb-1">
                     Giá tối đa (VNĐ)
                 </label>
@@ -106,17 +110,32 @@
             </div>
 
             @if ($isAdminRoute)
-                {{-- Trạng thái dành cho Admin --}}
-                <div class="lg:col-span-3">
+                {{-- Trạng thái kinh doanh dành cho Admin --}}
+                <div class="lg:col-span-2">
                     <label for="status" class="block text-xs font-semibold text-ink/70 mb-1">
-                        Trạng thái kinh doanh
+                        Kinh doanh
                     </label>
                     <select id="status" 
                             name="status" 
                             class="w-full text-sm rounded-xl border-ink/15 bg-base text-ink focus:border-primary focus:ring-primary py-2 px-3">
-                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="">-- Tất cả --</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Đang kinh doanh</option>
-                        <option value="hidden" {{ request('status') === 'hidden' ? 'selected' : '' }}>Ẩn khỏi cửa hàng</option>
+                        <option value="hidden" {{ request('status') === 'hidden' ? 'selected' : '' }}>Ẩn khỏi web</option>
+                    </select>
+                </div>
+
+                {{-- Cảnh báo tồn kho dành cho Admin (Đợt 3) --}}
+                <div class="lg:col-span-3">
+                    <label for="stock_status" class="block text-xs font-semibold text-ink/70 mb-1">
+                        Cảnh báo tồn kho
+                    </label>
+                    <select id="stock_status" 
+                            name="stock_status" 
+                            class="w-full text-sm rounded-xl border-ink/15 bg-base text-ink focus:border-primary focus:ring-primary py-2 px-3">
+                        <option value="">-- Tất cả mức kho --</option>
+                        <option value="low_stock" {{ request('stock_status') === 'low_stock' ? 'selected' : '' }}>⚠️ Sắp hết hàng (&lt; 5)</option>
+                        <option value="out_of_stock" {{ request('stock_status') === 'out_of_stock' ? 'selected' : '' }}>❌ Đã hết hàng (0)</option>
+                        <option value="in_stock" {{ request('stock_status') === 'in_stock' ? 'selected' : '' }}>✅ Còn hàng (&ge; 5)</option>
                     </select>
                 </div>
             @else

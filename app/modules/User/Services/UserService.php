@@ -109,6 +109,7 @@ class UserService
      * Cập nhật thông tin tài khoản người dùng.
      *
      * @param  array<string, mixed>  $data
+     *
      * @throws ResourceNotFoundException
      */
     public function updateUser(int|string $id, array $data): User

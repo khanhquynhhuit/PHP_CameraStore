@@ -35,7 +35,7 @@ return new class extends Migration
         if (DB::getDriverName() === 'mysql' && Schema::hasTable('cart_items')) {
             try {
                 DB::statement('ALTER TABLE cart_items DROP CHECK chk_cart_items_quantity');
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 // Ignore if constraint already dropped
             }
         }

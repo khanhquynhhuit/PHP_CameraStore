@@ -15,11 +15,11 @@ class CategoryRepository
     {
         $truyVan = Category::query()->withCount('products');
 
-        if (!empty($boLoc['tu_khoa'])) {
+        if (! empty($boLoc['tu_khoa'])) {
             $tuKhoa = trim($boLoc['tu_khoa']);
             $truyVan->where(function ($q) use ($tuKhoa) {
                 $q->where('name', 'like', "%{$tuKhoa}%")
-                  ->orWhere('slug', 'like', "%{$tuKhoa}%");
+                    ->orWhere('slug', 'like', "%{$tuKhoa}%");
             });
         }
 

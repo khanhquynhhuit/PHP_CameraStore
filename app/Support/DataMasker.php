@@ -67,10 +67,6 @@ class DataMasker
 
     /**
      * Mask an entire payload (array, object, JSON string, or scalar).
-     *
-     * @param mixed $data
-     * @param array $customSensitiveKeys
-     * @return mixed
      */
     public static function mask(mixed $data, array $customSensitiveKeys = []): mixed
     {
@@ -83,6 +79,7 @@ class DataMasker
             $decoded = json_decode($data, true);
             if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
                 $masked = self::maskArray($decoded, $customSensitiveKeys);
+
                 return json_encode($masked, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             }
 
@@ -95,6 +92,7 @@ class DataMasker
 
         if (is_object($data)) {
             $array = json_decode(json_encode($data), true);
+
             return self::maskArray($array, $customSensitiveKeys);
         }
 
@@ -103,10 +101,6 @@ class DataMasker
 
     /**
      * Mask an associative or sequential array recursively.
-     *
-     * @param array $data
-     * @param array $customSensitiveKeys
-     * @return array
      */
     public static function maskArray(array $data, array $customSensitiveKeys = []): array
     {
@@ -125,18 +119,21 @@ class DataMasker
             // 1. Check if key matches sensitive exact list or regex pattern
             if (in_array($lowerKey, $sensitiveKeys, true) || preg_match(self::$sensitiveKeyPattern, $keyStr)) {
                 $result[$key] = self::MASK;
+
                 continue;
             }
 
             // 2. If value is nested array, recurse
             if (is_array($value)) {
                 $result[$key] = self::maskArray($value, $customSensitiveKeys);
+
                 continue;
             }
 
             // 3. If value is string, mask any sensitive patterns inside string
             if (is_string($value)) {
                 $result[$key] = self::maskStringValue($value);
+
                 continue;
             }
 
@@ -148,17 +145,14 @@ class DataMasker
 
     /**
      * Mask sensitive strings (Bearer tokens, Authorization headers, Credit card regex).
-     *
-     * @param string $value
-     * @return string
      */
     public static function maskStringValue(string $value): string
     {
         // Mask Authorization Bearer Tokens
-        $value = preg_replace('/(Bearer\s+)[A-Za-z0-9\-\._~\+\/]+=*/i', '$1' . self::MASK, $value);
+        $value = preg_replace('/(Bearer\s+)[A-Za-z0-9\-\._~\+\/]+=*/i', '$1'.self::MASK, $value);
 
         // Mask Basic Auth strings
-        $value = preg_replace('/(Basic\s+)[A-Za-z0-9\+\/=]+/i', '$1' . self::MASK, $value);
+        $value = preg_replace('/(Basic\s+)[A-Za-z0-9\+\/=]+/i', '$1'.self::MASK, $value);
 
         // Mask credit card numbers (13 to 19 digits with optional hyphens/spaces)
         $value = preg_replace('/\b(?:\d[ -]*?){13,19}\b/', '****-****-****-****', $value);
@@ -168,9 +162,6 @@ class DataMasker
 
     /**
      * Mask HTTP headers array.
-     *
-     * @param array $headers
-     * @return array
      */
     public static function maskHeaders(array $headers): array
     {

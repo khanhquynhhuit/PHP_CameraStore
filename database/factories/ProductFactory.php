@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Enums\ProductStatus;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Enums\ProductStatus;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -35,16 +35,16 @@ class ProductFactory extends Factory
         ];
 
         $item = fake()->randomElement($cameraModels);
-        $name = $item['name'] . ' ' . fake()->numerify('V#');
+        $name = $item['name'].' '.fake()->numerify('V#');
         $price = $item['price'];
         $originalPrice = fake()->boolean(60) ? $price + fake()->numberBetween(1, 5) * 1000000 : null;
 
         return [
             'category_id' => Category::factory(),
             'brand_id' => Brand::factory(),
-            'sku' => $item['sku'] . '-' . strtoupper(Str::random(4)),
+            'sku' => $item['sku'].'-'.strtoupper(Str::random(4)),
             'name' => $name,
-            'slug' => Str::slug($name) . '-' . Str::lower(Str::random(4)),
+            'slug' => Str::slug($name).'-'.Str::lower(Str::random(4)),
             'price' => $price,
             'original_price' => $originalPrice,
             'stock' => fake()->numberBetween(5, 50),

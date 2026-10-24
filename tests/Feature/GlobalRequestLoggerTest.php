@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use App\Support\DataMasker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class GlobalRequestLoggerTest extends TestCase
@@ -13,14 +11,14 @@ class GlobalRequestLoggerTest extends TestCase
     public function it_masks_exact_sensitive_fields_in_array()
     {
         $input = [
-            'name'                  => 'Nguyen Van A',
-            'email'                 => 'nguyenvana@example.com',
-            'password'              => 'SuperSecret123!',
+            'name' => 'Nguyen Van A',
+            'email' => 'nguyenvana@example.com',
+            'password' => 'SuperSecret123!',
             'password_confirmation' => 'SuperSecret123!',
-            'token'                 => 'secret_api_token_abc',
-            'cvv'                   => '123',
-            'pin'                   => '9999',
-            'ssn'                   => '0123456789',
+            'token' => 'secret_api_token_abc',
+            'cvv' => '123',
+            'pin' => '9999',
+            'ssn' => '0123456789',
         ];
 
         $masked = DataMasker::mask($input);
@@ -39,13 +37,13 @@ class GlobalRequestLoggerTest extends TestCase
     public function it_masks_globally_and_dynamically_any_unknown_sensitive_keys()
     {
         $input = [
-            'user_password_hash'   => '$2y$10$abcdef123456',
+            'user_password_hash' => '$2y$10$abcdef123456',
             'my_custom_secret_key' => 'secret_xyz',
-            'payment_card_number'  => '4111222233334444',
-            'device_auth_token'    => 'auth_99999',
-            'user_otp_code'        => '654321',
-            'product_name'         => 'Sony A7 IV',
-            'product_price'        => 45000000,
+            'payment_card_number' => '4111222233334444',
+            'device_auth_token' => 'auth_99999',
+            'user_otp_code' => '654321',
+            'product_name' => 'Sony A7 IV',
+            'product_price' => 45000000,
         ];
 
         $masked = DataMasker::mask($input);
@@ -71,7 +69,7 @@ class GlobalRequestLoggerTest extends TestCase
                     'name' => 'Tran B',
                     'credentials' => [
                         'password' => 'secret',
-                        'api_key'  => 'xyz123',
+                        'api_key' => 'xyz123',
                     ],
                 ],
                 'items' => [
@@ -94,7 +92,7 @@ class GlobalRequestLoggerTest extends TestCase
         $headerValue = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.t-IDcSemACt8x4iTMCda8Yhe3iZaWbvV5XKSTbuAn0M';
         $masked = DataMasker::maskStringValue($headerValue);
 
-        $this->assertStringStartsWith('Bearer ' . DataMasker::MASK, $masked);
+        $this->assertStringStartsWith('Bearer '.DataMasker::MASK, $masked);
         $this->assertStringNotContainsString('eyJhbGciOiJIUzI1Ni', $masked);
     }
 

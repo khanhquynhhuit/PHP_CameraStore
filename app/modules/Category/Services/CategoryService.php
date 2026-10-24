@@ -39,7 +39,7 @@ class CategoryService
     {
         $danhMuc = $this->categoryRepository->timTheoId($maDanhMuc);
 
-        if (!$danhMuc) {
+        if (! $danhMuc) {
             throw new ResourceNotFoundException('Danh mục được yêu cầu không tồn tại trong hệ thống.');
         }
 
@@ -52,7 +52,7 @@ class CategoryService
     public function taoDanhMucMoi(array $duLieu): Category
     {
         $tenDanhMuc = trim($duLieu['name']);
-        $duongDanTinh = !empty($duLieu['slug']) ? Str::slug($duLieu['slug']) : Str::slug($tenDanhMuc);
+        $duongDanTinh = ! empty($duLieu['slug']) ? Str::slug($duLieu['slug']) : Str::slug($tenDanhMuc);
 
         $duLieuCanLuu = [
             'name' => $tenDanhMuc,
@@ -71,7 +71,7 @@ class CategoryService
         $danhMucHienTai = $this->layChiTietDanhMuc($maDanhMuc);
 
         $tenDanhMuc = trim($duLieu['name']);
-        $duongDanTinh = !empty($duLieu['slug']) ? Str::slug($duLieu['slug']) : Str::slug($tenDanhMuc);
+        $duongDanTinh = ! empty($duLieu['slug']) ? Str::slug($duLieu['slug']) : Str::slug($tenDanhMuc);
 
         $duLieuCanCapNhat = [
             'name' => $tenDanhMuc,

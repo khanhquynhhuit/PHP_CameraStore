@@ -249,6 +249,7 @@ class GlobalExceptionHandler
         if ($e instanceof ModelNotFoundException) {
             $modelNames = explode('\\', (string) $e->getModel());
             $model = end($modelNames);
+
             return "Không tìm thấy dữ liệu {$model} yêu cầu";
         }
 
@@ -257,6 +258,7 @@ class GlobalExceptionHandler
             if ($prev instanceof ModelNotFoundException) {
                 return self::getErrorMessage($prev, Response::HTTP_NOT_FOUND);
             }
+
             return 'Đường dẫn hoặc tài nguyên không tồn tại';
         }
 
@@ -316,7 +318,7 @@ class GlobalExceptionHandler
      */
     protected static function getDebugInfo(Throwable $e): ?array
     {
-        if (!config('app.debug', false)) {
+        if (! config('app.debug', false)) {
             return null;
         }
 
@@ -325,7 +327,7 @@ class GlobalExceptionHandler
             'message' => $e->getMessage(),
             'file' => $e->getFile(),
             'line' => $e->getLine(),
-            'trace' => collect($e->getTrace())->take(10)->map(fn($item) => [
+            'trace' => collect($e->getTrace())->take(10)->map(fn ($item) => [
                 'file' => $item['file'] ?? null,
                 'line' => $item['line'] ?? null,
                 'function' => $item['function'] ?? null,

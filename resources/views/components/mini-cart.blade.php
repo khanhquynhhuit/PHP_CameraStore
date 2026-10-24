@@ -78,12 +78,12 @@
                                          onerror="this.onerror=null;this.src='https://placehold.co/100x100?text=Camera';">
                                 </div>
                                 <div class="min-w-0">
-                                    <a href="{{ route('products.show', $item->product->id) }}" class="text-xs font-semibold text-ink truncate block hover:underline">
+                                    <a href="{{ route('products.show', $item->product->id) }}" class="text-xs font-semibold !text-black truncate block hover:underline" style="color: #000000 !important;">
                                         {{ $item->product->name }}
                                     </a>
                                     <p class="text-xs text-ink/70 mt-0.5">
-                                        <span class="font-bold text-ink">{{ $item->quantity }}</span> x 
-                                        <span class="font-heading font-bold tabular-nums text-primary">{{ number_format($item->product->price, 0, ',', '.') }} đ</span>
+                                        <span class="font-bold !text-black" style="color: #000000 !important;">{{ $item->quantity }}</span> x 
+                                        <span class="font-heading font-bold tabular-nums !text-black" style="color: #000000 !important;">{{ number_format($item->product->price, 0, ',', '.') }} đ</span>
                                     </p>
                                 </div>
                             </div>
@@ -100,7 +100,7 @@
                         <x-button variant="outline" size="sm" :href="route('cart.index')" class="w-full">
                             Xem giỏ
                         </x-button>
-                        <x-button variant="primary" size="sm" :href="route('checkout.index')" class="w-full">
+                        <x-button variant="primary" size="sm" :href="route('cart.index')" class="w-full">
                             Thanh toán ngay
                         </x-button>
                     </div>

@@ -9,8 +9,11 @@ use Throwable;
 class ApiException extends Exception
 {
     protected int $statusCode;
+
     protected ?string $errorCode;
+
     protected mixed $errors;
+
     protected mixed $data;
 
     public function __construct(

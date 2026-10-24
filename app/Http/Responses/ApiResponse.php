@@ -25,7 +25,7 @@ class ApiResponse
             'timestamp' => now()->toISOString(),
         ];
 
-        if (!empty($extra)) {
+        if (! empty($extra)) {
             $response = array_merge($response, $extra);
         }
 
@@ -81,7 +81,7 @@ class ApiResponse
                     'from' => $paginator->firstItem(),
                     'to' => $paginator->lastItem(),
                     'has_more_pages' => $paginator->hasMorePages(),
-                ]
+                ],
             ]
         );
     }

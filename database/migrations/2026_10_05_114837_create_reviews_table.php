@@ -37,7 +37,7 @@ return new class extends Migration
         if (DB::getDriverName() === 'mysql' && Schema::hasTable('reviews')) {
             try {
                 DB::statement('ALTER TABLE reviews DROP CHECK chk_reviews_rating');
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 // Ignore if constraint already dropped
             }
         }

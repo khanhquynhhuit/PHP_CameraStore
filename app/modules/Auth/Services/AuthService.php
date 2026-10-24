@@ -3,7 +3,6 @@
 namespace App\Modules\Auth\Services;
 
 use App\Exceptions\BadRequestException;
-use App\Exceptions\UnauthorizedException;
 use App\Models\User;
 use App\Modules\Auth\Repositories\AuthRepository;
 use Illuminate\Auth\Events\PasswordReset;

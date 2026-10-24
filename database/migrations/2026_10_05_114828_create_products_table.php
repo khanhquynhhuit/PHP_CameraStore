@@ -52,7 +52,7 @@ return new class extends Migration
             try {
                 DB::statement('ALTER TABLE products DROP CHECK chk_products_price');
                 DB::statement('ALTER TABLE products DROP CHECK chk_products_original_price');
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 // Ignore if constraint already dropped
             }
         }

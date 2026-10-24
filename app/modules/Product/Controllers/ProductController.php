@@ -4,9 +4,9 @@ namespace App\Modules\Product\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Product\Services\ProductService;
+use App\Modules\Review\Services\ReviewService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
-use App\Modules\Review\Services\ReviewService;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -17,6 +17,7 @@ class ProductController extends Controller
         protected ProductService $productService,
         protected ReviewService $reviewService
     ) {}
+
     /**
      * Hiển thị danh sách sản phẩm công khai dành cho khách hàng (Tìm kiếm, Lọc đa tiêu chí & Phân trang 9 sản phẩm/trang)
      */

@@ -14,7 +14,7 @@ class OrderRepository
         // Thêm query() để VS Code nhận diện đúng chuẩn Eloquent Builder, hết báo vàng
         $query = Order::query()->with(['items.product', 'statusHistories'])->where('user_id', $userId);
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
@@ -25,7 +25,7 @@ class OrderRepository
     {
         $query = Order::query()->with(['user', 'items', 'statusHistories.changer']);
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
@@ -41,7 +41,7 @@ class OrderRepository
     {
         $order = Order::create($orderData);
 
-        if (!empty($itemsData)) {
+        if (! empty($itemsData)) {
             $order->items()->createMany($itemsData);
         }
 
@@ -50,7 +50,7 @@ class OrderRepository
 
     public function update(Order|int|string $order, array $data)
     {
-        if (!$order instanceof Order) {
+        if (! $order instanceof Order) {
             $order = Order::findOrFail($order);
         }
 

@@ -28,7 +28,7 @@ class GlobalExceptionFilterTest extends TestCase
         });
 
         Route::get('/api/test-model-not-found', function () {
-            $exception = new ModelNotFoundException();
+            $exception = new ModelNotFoundException;
             $exception->setModel(User::class);
             throw $exception;
         });
@@ -38,11 +38,11 @@ class GlobalExceptionFilterTest extends TestCase
         });
 
         Route::get('/api/test-unauthorized', function () {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException;
         });
 
         Route::get('/api/test-forbidden', function () {
-            throw new ForbiddenException();
+            throw new ForbiddenException;
         });
 
         Route::get('/api/test-business-exception', function () {

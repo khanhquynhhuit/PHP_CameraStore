@@ -4,7 +4,6 @@ namespace App\Modules\Cart\Services;
 
 use App\Exceptions\BusinessException;
 use App\Exceptions\ResourceNotFoundException;
-use App\Models\Cart;
 use App\Models\Product;
 use App\Modules\Cart\Repositories\CartRepository;
 
@@ -48,7 +47,7 @@ class CartService
     public function addToCart(int|string $userId, int|string $productId, int $quantity = 1): void
     {
         $product = Product::find($productId);
-        if (!$product) {
+        if (! $product) {
             throw new ResourceNotFoundException('Không tìm thấy sản phẩm yêu cầu.');
         }
 
@@ -59,7 +58,7 @@ class CartService
 
         // Quy tắc: Nếu vượt quá tồn kho, throw new BusinessException
         if ($newQuantity > $product->stock) {
-            throw new BusinessException('Số lượng sản phẩm trong kho không đủ! (Chỉ còn ' . $product->stock . ' sản phẩm)');
+            throw new BusinessException('Số lượng sản phẩm trong kho không đủ! (Chỉ còn '.$product->stock.' sản phẩm)');
         }
 
         if ($cartItem) {
@@ -76,19 +75,20 @@ class CartService
     {
         if ($quantity <= 0) {
             $this->removeItem($userId, $itemId);
+
             return;
         }
 
         $cart = $this->cartRepository->getCartByUserId($userId);
         $cartItem = $this->cartRepository->findItemByIdAndCartId($itemId, $cart->id);
 
-        if (!$cartItem) {
+        if (! $cartItem) {
             throw new ResourceNotFoundException('Sản phẩm không có trong giỏ hàng.');
         }
 
         $product = $cartItem->product;
         if ($quantity > $product->stock) {
-            throw new BusinessException('Số lượng sản phẩm trong kho không đủ! (Chỉ còn ' . $product->stock . ' sản phẩm)');
+            throw new BusinessException('Số lượng sản phẩm trong kho không đủ! (Chỉ còn '.$product->stock.' sản phẩm)');
         }
 
         $this->cartRepository->updateItem($cartItem, $quantity);
@@ -102,7 +102,7 @@ class CartService
         $cart = $this->cartRepository->getCartByUserId($userId);
         $cartItem = $this->cartRepository->findItemByIdAndCartId($itemId, $cart->id);
 
-        if (!$cartItem) {
+        if (! $cartItem) {
             throw new ResourceNotFoundException('Sản phẩm không tồn tại trong giỏ hàng.');
         }
 

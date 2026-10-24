@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Coupon;
 use App\Models\Enums\OrderStatus;
 use App\Models\Enums\PaymentMethod;
 use App\Models\Enums\PaymentStatus;
 use App\Models\Enums\RoleName;
-use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatusHistory;
@@ -92,7 +92,7 @@ class OrderSeeder extends Seeder
                 'payment_method' => PaymentMethod::COD,
                 'payment_status' => PaymentStatus::UNPAID,
                 'coupon' => null,
-                'tracking' => 'VNPOST' . fake()->numerify('#########'),
+                'tracking' => 'VNPOST'.fake()->numerify('#########'),
                 'item_count' => 2,
             ],
             [
@@ -101,7 +101,7 @@ class OrderSeeder extends Seeder
                 'payment_method' => PaymentMethod::BANK,
                 'payment_status' => PaymentStatus::PAID,
                 'coupon' => 'WELCOME10',
-                'tracking' => 'VTP' . fake()->numerify('#########'),
+                'tracking' => 'VTP'.fake()->numerify('#########'),
                 'item_count' => 3,
             ],
 
@@ -112,7 +112,7 @@ class OrderSeeder extends Seeder
                 'payment_method' => PaymentMethod::COD,
                 'payment_status' => PaymentStatus::PAID,
                 'coupon' => null,
-                'tracking' => 'VNPOST' . fake()->numerify('#########'),
+                'tracking' => 'VNPOST'.fake()->numerify('#########'),
                 'item_count' => 1,
             ],
             [
@@ -121,7 +121,7 @@ class OrderSeeder extends Seeder
                 'payment_method' => PaymentMethod::VNPAY,
                 'payment_status' => PaymentStatus::PAID,
                 'coupon' => 'GIAM500K',
-                'tracking' => 'VTP' . fake()->numerify('#########'),
+                'tracking' => 'VTP'.fake()->numerify('#########'),
                 'item_count' => 2,
             ],
             [
@@ -130,7 +130,7 @@ class OrderSeeder extends Seeder
                 'payment_method' => PaymentMethod::BANK,
                 'payment_status' => PaymentStatus::PAID,
                 'coupon' => 'WELCOME10',
-                'tracking' => 'GHN' . fake()->numerify('#########'),
+                'tracking' => 'GHN'.fake()->numerify('#########'),
                 'item_count' => 2,
             ],
 
@@ -189,7 +189,7 @@ class OrderSeeder extends Seeder
             // Tính discount dựa trên Coupon (nếu có)
             $discount = 0;
             $appliedCoupon = null;
-            if (!empty($scenario['coupon']) && isset($coupons[$scenario['coupon']])) {
+            if (! empty($scenario['coupon']) && isset($coupons[$scenario['coupon']])) {
                 $appliedCoupon = $coupons[$scenario['coupon']];
                 if ($appliedCoupon->type->value === 'percent') {
                     $discount = round(($subtotal * (float) $appliedCoupon->value) / 100);
@@ -202,7 +202,7 @@ class OrderSeeder extends Seeder
             $total = max(0, $subtotal - $discount + $shippingFee);
 
             $order = Order::query()->create([
-                'code' => 'ORD' . $createdAt->format('ymd') . Str::upper(Str::random(4)),
+                'code' => 'ORD'.$createdAt->format('ymd').Str::upper(Str::random(4)),
                 'user_id' => $customer->id,
                 'coupon_id' => $appliedCoupon?->id,
                 'receiver_name' => $customer->name,
@@ -294,6 +294,7 @@ class OrderSeeder extends Seeder
                 'note' => $scenario['cancel_reason'] ?? 'Hủy đơn từ trạng thái chờ xác nhận.',
                 'created_at' => (clone $createdAt)->addHours(2),
             ]);
+
             return;
         }
 
@@ -322,6 +323,7 @@ class OrderSeeder extends Seeder
                 'note' => $scenario['cancel_reason'] ?? 'Hủy đơn sau khi đã xác nhận.',
                 'created_at' => (clone $confirmedAt)->addHours(4),
             ]);
+
             return;
         }
 

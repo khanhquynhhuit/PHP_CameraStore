@@ -53,7 +53,7 @@ class CartRepository
      */
     public function updateItem(CartItem|int|string $item, int $quantity): bool
     {
-        if (!$item instanceof CartItem) {
+        if (! $item instanceof CartItem) {
             $item = CartItem::findOrFail($item);
         }
 
@@ -65,7 +65,7 @@ class CartRepository
      */
     public function removeItem(CartItem|int|string $item): bool
     {
-        if (!$item instanceof CartItem) {
+        if (! $item instanceof CartItem) {
             $item = CartItem::findOrFail($item);
         }
 

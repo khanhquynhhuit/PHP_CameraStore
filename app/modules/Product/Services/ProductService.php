@@ -11,6 +11,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+
 class ProductService
 {
     public function __construct(
@@ -63,7 +64,7 @@ class ProductService
     {
         $sanPham = $this->productRepository->timTheoId($maSanPham);
 
-        if (!$sanPham) {
+        if (! $sanPham) {
             throw new ResourceNotFoundException('Sản phẩm máy ảnh không tồn tại trong hệ thống.');
         }
 
@@ -100,7 +101,7 @@ class ProductService
 
             // Kiểm tra ràng buộc giá niêm yết
             if (isset($duLieu['original_price']) && $duLieu['original_price'] !== '') {
-                if ((float)$duLieu['original_price'] < (float)$duLieu['price']) {
+                if ((float) $duLieu['original_price'] < (float) $duLieu['price']) {
                     throw new BusinessException('Giá gốc niêm yết không được nhỏ hơn giá bán thực tế!');
                 }
             } else {
@@ -147,7 +148,7 @@ class ProductService
 
             // Kiểm tra ràng buộc giá
             if (isset($duLieu['original_price']) && $duLieu['original_price'] !== '') {
-                if ((float)$duLieu['original_price'] < (float)$duLieu['price']) {
+                if ((float) $duLieu['original_price'] < (float) $duLieu['price']) {
                     throw new BusinessException('Giá gốc niêm yết không được nhỏ hơn giá bán thực tế!');
                 }
             } else {

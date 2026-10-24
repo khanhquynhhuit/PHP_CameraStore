@@ -13,15 +13,11 @@ class GlobalRequestLogger
 {
     /**
      * Handle an incoming request and log metrics with masked sensitive data.
-     *
-     * @param Request $request
-     * @param Closure $next
-     * @return Response
      */
     public function handle(Request $request, Closure $next): Response
     {
         // Check if audit logging is globally enabled
-        if (!config('audit.enabled', true)) {
+        if (! config('audit.enabled', true)) {
             return $next($request);
         }
 
@@ -48,16 +44,13 @@ class GlobalRequestLogger
 
         // Attach trace headers to response
         $response->headers->set('X-Request-ID', $requestId);
-        $response->headers->set('X-Response-Time', $durationMs . 'ms');
+        $response->headers->set('X-Response-Time', $durationMs.'ms');
 
         return $response;
     }
 
     /**
      * Determine if the request matches any excluded URI pattern.
-     *
-     * @param Request $request
-     * @return bool
      */
     protected function shouldExclude(Request $request): bool
     {
@@ -74,13 +67,6 @@ class GlobalRequestLogger
 
     /**
      * Log structured activity details with masked sensitive data.
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param string $requestId
-     * @param float $durationMs
-     * @param float $peakMemoryMb
-     * @return void
      */
     protected function logActivity(
         Request $request,
@@ -96,21 +82,21 @@ class GlobalRequestLogger
 
         // Build masked context
         $context = [
-            'request_id'   => $requestId,
-            'method'       => $method,
-            'url'          => $request->fullUrl(),
-            'path'         => '/' . ltrim($path, '/'),
-            'route'        => $request->route()?->getName(),
-            'action'       => $request->route()?->getActionName(),
-            'status'       => $statusCode,
-            'duration'     => $durationMs . ' ms',
-            'memory_peak'  => $peakMemoryMb . ' MB',
-            'ip'           => $request->ip(),
-            'user_agent'   => $request->userAgent(),
-            'user'         => $user ? [
-                'id'    => $user->id,
+            'request_id' => $requestId,
+            'method' => $method,
+            'url' => $request->fullUrl(),
+            'path' => '/'.ltrim($path, '/'),
+            'route' => $request->route()?->getName(),
+            'action' => $request->route()?->getActionName(),
+            'status' => $statusCode,
+            'duration' => $durationMs.' ms',
+            'memory_peak' => $peakMemoryMb.' MB',
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'user' => $user ? [
+                'id' => $user->id,
                 'email' => $user->email,
-                'role'  => $user->role ?? null,
+                'role' => $user->role ?? null,
             ] : 'Guest',
         ];
 

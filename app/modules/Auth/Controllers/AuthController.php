@@ -161,7 +161,7 @@ class AuthController extends Controller
      */
     public function confirmPassword(Request $request): JsonResponse|RedirectResponse
     {
-        if (!Auth::guard('web')->validate([
+        if (! Auth::guard('web')->validate([
             'email' => $request->user()->email,
             'password' => $request->password,
         ])) {
@@ -198,7 +198,8 @@ class AuthController extends Controller
             if ($request->expectsJson()) {
                 return $this->successResponse(message: 'Email đã được xác thực trước đó');
             }
-            return redirect()->intended(route('dashboard', absolute: false) . '?verified=1');
+
+            return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
         }
 
         if ($request->user()->markEmailAsVerified()) {
@@ -209,7 +210,7 @@ class AuthController extends Controller
             return $this->successResponse(message: 'Xác thực email thành công');
         }
 
-        return redirect()->intended(route('dashboard', absolute: false) . '?verified=1');
+        return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
     }
 
     /**

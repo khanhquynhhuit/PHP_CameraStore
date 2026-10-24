@@ -2,16 +2,17 @@
 
 use App\Modules\Cart\Controllers\CartController;
 use App\Modules\Category\Controllers\CategoryController;
+use App\Modules\Dashboard\Controllers\DashboardController;
 use App\Modules\Order\Controllers\AdminOrderController;
 use App\Modules\Order\Controllers\CheckoutController;
 use App\Modules\Order\Controllers\OrderController;
 use App\Modules\Product\Controllers\AdminProductController;
 use App\Modules\Product\Controllers\ProductController;
+use App\Modules\Review\Controllers\ReviewController;
 use App\Modules\User\Controllers\AdminUserController;
 use App\Modules\User\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Modules\Dashboard\Controllers\DashboardController;
-use App\Modules\Review\Controllers\ReviewController;
+
 // Trang chủ & Sản phẩm công khai
 Route::get('/', function () {
     return view('modules.Home.pages.index');
@@ -42,6 +43,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/{id}', [CartController::class, 'update'])->name('update');
         Route::delete('/clear', [CartController::class, 'clear'])->name('clear');
         Route::delete('/{id}', [CartController::class, 'destroy'])->name('destroy');
+        Route::post('/coupon/apply', [CartController::class, 'applyCoupon'])->name('coupon.apply');
     });
 
     // Checkout & Đơn hàng cá nhân
@@ -82,4 +84,4 @@ Route::middleware(['auth', 'role:customer'])
         [ReviewController::class, 'store']
     )
     ->name('reviews.store');
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

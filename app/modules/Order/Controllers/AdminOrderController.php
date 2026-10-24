@@ -21,12 +21,14 @@ class AdminOrderController extends Controller
     public function index(Request $request)
     {
         $orders = $this->orderService->listAllOrders($request->all());
+
         return view('modules.Order.pages.admin-index', compact('orders'));
     }
 
     public function show(string $id)
     {
         $order = $this->orderService->getOrderDetail($id);
+
         return view('modules.Order.pages.admin-show', compact('order'));
     }
 
@@ -34,11 +36,12 @@ class AdminOrderController extends Controller
     {
         try {
             $this->orderStatusService->transitionTo(
-                $id, 
-                $request->input('status'), 
+                $id,
+                $request->input('status'),
                 $request->user()->id, // ID của Admin/Staff đang thao tác
                 $request->input('note')
             );
+
             return redirect()->back()->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());

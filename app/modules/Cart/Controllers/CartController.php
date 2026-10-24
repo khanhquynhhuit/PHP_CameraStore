@@ -3,10 +3,13 @@
 namespace App\Modules\Cart\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Address;
 use App\Modules\Cart\Requests\AddToCartRequest;
 use App\Modules\Cart\Requests\UpdateCartItemRequest;
 use App\Modules\Cart\Services\CartService;
+use App\Modules\Cart\Services\CouponService;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -29,7 +32,7 @@ class CartController extends Controller
             return $this->successResponse($cartData, 'Lấy thông tin giỏ hàng thành công');
         }
 
-        $addresses = \App\Models\Address::where('user_id', $userId)->get();
+        $addresses = Address::where('user_id', $userId)->get();
 
         return view('modules.Cart.pages.index', [
             'cart' => $cartData['cart'],
@@ -104,5 +107,35 @@ class CartController extends Controller
         }
 
         return redirect()->route('cart.index')->with('success', 'Đã làm rỗng giỏ hàng thành công!');
+    }
+
+    /**
+     * Kiểm tra và áp dụng mã giảm giá (voucher) cho giỏ hàng
+     */
+    public function applyCoupon(Request $request, CouponService $couponService): JsonResponse
+    {
+        $code = (string) $request->input('code', '');
+        $subtotal = (float) $request->input('subtotal', 0);
+
+        $result = $couponService->validateAndCalculate($code, $subtotal);
+
+        if (! $result['valid']) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $result['message'],
+            'coupon' => [
+                'code' => $result['coupon']->code,
+                'type' => $result['coupon']->type->value,
+                'value' => (float) $result['coupon']->value,
+            ],
+            'discount' => $result['discount'],
+            'discount_formatted' => number_format($result['discount'], 0, ',', '.').' đ',
+        ]);
     }
 }

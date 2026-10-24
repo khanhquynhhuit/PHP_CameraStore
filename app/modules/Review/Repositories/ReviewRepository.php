@@ -20,8 +20,7 @@ class ReviewRepository
             ->where('status', OrderStatus::COMPLETED->value)
             ->whereHas(
                 'orderItems',
-                fn ($query) =>
-                    $query->where('product_id', $productId)
+                fn ($query) => $query->where('product_id', $productId)
             )
             ->exists();
     }
@@ -52,15 +51,13 @@ class ReviewRepository
             ->where('status', OrderStatus::COMPLETED->value)
             ->whereHas(
                 'orderItems',
-                fn ($query) =>
-                    $query->where('product_id', $productId)
+                fn ($query) => $query->where('product_id', $productId)
             )
             ->whereDoesntHave(
                 'reviews',
-                fn ($query) =>
-                    $query
-                        ->where('user_id', $userId)
-                        ->where('product_id', $productId)
+                fn ($query) => $query
+                    ->where('user_id', $userId)
+                    ->where('product_id', $productId)
             )
             ->latest('created_at')
             ->get([

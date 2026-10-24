@@ -14,7 +14,7 @@
                          onerror="this.onerror=null;this.src='https://placehold.co/100x100?text=Camera';">
                 </a>
                 <div>
-                    <a href="{{ route('products.show', $item->product->id) }}" class="font-heading font-semibold tracking-tight text-ink hover:underline transition text-sm sm:text-base line-clamp-2">
+                    <a href="{{ route('products.show', $item->product->id) }}" class="font-heading font-semibold tracking-tight !text-black hover:underline transition text-sm sm:text-[16px] line-clamp-2" style="color: #000000 !important;">
                         {{ $item->product->name }}
                     </a>
                     <div class="flex items-center gap-2 mt-1">
@@ -23,7 +23,7 @@
                             Còn {{ $item->product->stock }} máy
                         </span>
                     </div>
-                    <p class="font-heading text-sm font-bold tabular-nums text-ink mt-1">
+                    <p class="font-heading text-sm font-bold tabular-nums !text-black mt-1" style="color: #000000 !important;">
                         {{ number_format($item->product->price, 0, ',', '.') }} đ
                     </p>
                 </div>
@@ -74,7 +74,7 @@
                 <!-- Thành tiền của dòng -->
                 <div class="text-right sm:min-w-[110px]">
                     <span class="block text-xs text-ink/70">Thành tiền</span>
-                    <span class="font-heading font-bold tabular-nums text-ink text-sm sm:text-base">
+                    <span class="font-heading font-bold tabular-nums !text-black text-sm sm:text-[16px]" style="color: #000000 !important;">
                         {{ number_format($item->line_total, 0, ',', '.') }} đ
                     </span>
                 </div>

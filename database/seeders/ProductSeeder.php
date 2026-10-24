@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Enums\ProductStatus;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Enums\ProductStatus;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\User;
@@ -557,7 +557,7 @@ class ProductSeeder extends Seeder
             $category = $categories->get($data['category']);
             $brand = $brands->get($data['brand']);
 
-            if (!$category || !$brand) {
+            if (! $category || ! $brand) {
                 continue;
             }
 
@@ -586,7 +586,7 @@ class ProductSeeder extends Seeder
                     'is_primary' => true,
                 ],
                 [
-                    'path' => 'products/' . Str::lower($product->sku) . '.jpg',
+                    'path' => 'products/'.Str::lower($product->sku).'.jpg',
                     'sort_order' => 0,
                 ]
             );

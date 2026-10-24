@@ -20,18 +20,18 @@ class ProductRepository
             ->with(['category', 'brand', 'productImages']);
 
         // 1. Tìm theo từ khóa (Tên sản phẩm hoặc mã SKU)
-        if (!empty($boLoc['tu_khoa'])) {
+        if (! empty($boLoc['tu_khoa'])) {
             $tuKhoa = trim($boLoc['tu_khoa']);
             $truyVan->where(function ($q) use ($tuKhoa) {
                 $q->where('name', 'like', "%{$tuKhoa}%")
-                  ->orWhere('sku', 'like', "%{$tuKhoa}%");
+                    ->orWhere('sku', 'like', "%{$tuKhoa}%");
             });
         }
 
         // 2. Lọc theo danh mục (ID hoặc Slug)
-        if (!empty($boLoc['category_id'])) {
+        if (! empty($boLoc['category_id'])) {
             $truyVan->where('category_id', $boLoc['category_id']);
-        } elseif (!empty($boLoc['category_slug'])) {
+        } elseif (! empty($boLoc['category_slug'])) {
             $slugDanhMuc = $boLoc['category_slug'];
             $truyVan->whereHas('category', function ($q) use ($slugDanhMuc) {
                 $q->where('slug', $slugDanhMuc);
@@ -39,9 +39,9 @@ class ProductRepository
         }
 
         // 3. Lọc theo thương hiệu (ID hoặc Tên hãng)
-        if (!empty($boLoc['brand_id'])) {
+        if (! empty($boLoc['brand_id'])) {
             $truyVan->where('brand_id', $boLoc['brand_id']);
-        } elseif (!empty($boLoc['brand'])) {
+        } elseif (! empty($boLoc['brand'])) {
             $tenThuongHieu = $boLoc['brand'];
             $truyVan->whereHas('brand', function ($q) use ($tenThuongHieu) {
                 $q->where('name', 'like', "%{$tenThuongHieu}%");
@@ -58,12 +58,12 @@ class ProductRepository
         }
 
         // 5. Lọc theo trạng thái kinh doanh
-        if (!empty($boLoc['status'])) {
+        if (! empty($boLoc['status'])) {
             $truyVan->where('status', $boLoc['status']);
         }
 
         // 6. Lọc sản phẩm còn hàng
-        if (!empty($boLoc['con_hang'])) {
+        if (! empty($boLoc['con_hang'])) {
             $truyVan->where('stock', '>', 0);
         }
 
@@ -118,7 +118,7 @@ class ProductRepository
                 'productImages',
                 'category',
                 'brand',
-                'reviews' => fn($query) => $query->with('user')->latest(),
+                'reviews' => fn ($query) => $query->with('user')->latest(),
             ])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')

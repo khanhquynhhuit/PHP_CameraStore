@@ -4,12 +4,12 @@ namespace App\Models;
 
 use App\Models\Enums\ProductStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
@@ -89,7 +89,7 @@ class Product extends Model
     public function primaryImageRelation(): HasOne
     {
         return $this->hasOne(ProductImage::class)
-            ->ofMany(['sort_order' => 'asc', 'id' => 'asc'], fn($query) => $query->where('is_primary', true));
+            ->ofMany(['sort_order' => 'asc', 'id' => 'asc'], fn ($query) => $query->where('is_primary', true));
     }
 
     /**
@@ -102,6 +102,7 @@ class Product extends Model
                 if ($this->relationLoaded('productImages')) {
                     return $this->productImages->firstWhere('is_primary', true) ?? $this->productImages->first();
                 }
+
                 return $this->primaryImageRelation()->first() ?? $this->productImages()->first();
             }
         );

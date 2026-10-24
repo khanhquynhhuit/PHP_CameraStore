@@ -20,6 +20,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $orders = $this->orderService->listCustomerOrders($request->user()->id, $request->all());
+
         return view('modules.Order.pages.index', compact('orders'));
     }
 
@@ -38,6 +39,7 @@ class OrderController extends Controller
     {
         try {
             $this->orderStatusService->cancelOrderByCustomer($id, $request->user()->id, $request->input('cancel_reason'));
+
             return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công!');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
@@ -48,10 +50,13 @@ class OrderController extends Controller
     {
         try {
             $order = $this->orderService->getOrderDetail($id);
-            if ($order->user_id !== $request->user()->id) abort(403);
+            if ($order->user_id !== $request->user()->id) {
+                abort(403);
+            }
 
             // Chuyển sang trạng thái 'completed' (Hoàn tất)
             $this->orderStatusService->transitionTo($order, 'completed', $request->user()->id, 'Khách hàng xác nhận đã nhận hàng');
+
             return redirect()->back()->with('success', 'Cảm ơn bạn đã mua hàng!');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());

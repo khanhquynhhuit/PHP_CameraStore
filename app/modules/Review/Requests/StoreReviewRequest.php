@@ -35,23 +35,17 @@ class StoreReviewRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'order_id.required' =>
-                'Vui lòng chọn đơn hàng đã mua sản phẩm.',
+            'order_id.required' => 'Vui lòng chọn đơn hàng đã mua sản phẩm.',
 
-            'order_id.exists' =>
-                'Đơn hàng được chọn không tồn tại.',
+            'order_id.exists' => 'Đơn hàng được chọn không tồn tại.',
 
-            'rating.required' =>
-                'Vui lòng chọn số sao đánh giá.',
+            'rating.required' => 'Vui lòng chọn số sao đánh giá.',
 
-            'rating.integer' =>
-                'Số sao đánh giá không hợp lệ.',
+            'rating.integer' => 'Số sao đánh giá không hợp lệ.',
 
-            'rating.between' =>
-                'Số sao phải nằm trong khoảng từ 1 đến 5.',
+            'rating.between' => 'Số sao phải nằm trong khoảng từ 1 đến 5.',
 
-            'comment.max' =>
-                'Nội dung đánh giá không được vượt quá 1.000 ký tự.',
+            'comment.max' => 'Nội dung đánh giá không được vượt quá 1.000 ký tự.',
         ];
     }
 }

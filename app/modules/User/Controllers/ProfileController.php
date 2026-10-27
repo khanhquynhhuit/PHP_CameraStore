@@ -2,6 +2,7 @@
 
 namespace App\Modules\User\Controllers;
 
+use App\Exceptions\BusinessException;
 use App\Http\Controllers\Controller;
 use App\Modules\User\Requests\ProfileUpdateRequest;
 use App\Modules\User\Requests\StoreAddressRequest;
@@ -62,6 +63,10 @@ class ProfileController extends Controller
      */
     public function storeAddress(StoreAddressRequest $request): RedirectResponse|JsonResponse
     {
+        if (! $request->user()->isCustomer()) {
+            throw new BusinessException('Chức năng sổ địa chỉ nhận hàng chỉ áp dụng cho tài khoản Khách hàng.');
+        }
+
         $address = $this->profileService->addAddress($request->user(), $request->validated());
 
         if ($request->expectsJson()) {

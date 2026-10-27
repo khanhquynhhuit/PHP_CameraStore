@@ -58,8 +58,8 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-// Khu vực Quản trị (Admin & Staff)
-Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')->group(function () {
+// Khu vực Vận hành Cửa hàng (Dành riêng cho Staff)
+Route::middleware(['auth', 'role:staff'])->prefix('admin')->name('admin.')->group(function () {
     // Quản lý Sản phẩm
     Route::resource('products', AdminProductController::class);
 
@@ -74,13 +74,13 @@ Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')
     Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{id}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::patch('orders/{id}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
+});
 
-    // Quản lý Người dùng (chỉ Admin)
-    Route::middleware('role:admin')->group(function () {
-        Route::patch('users/{id}/toggle-status', [AdminUserController::class, 'toggleStatus'])->name('users.toggle-status');
-        Route::patch('users/{id}/role', [AdminUserController::class, 'updateRole'])->name('users.update-role');
-        Route::resource('users', AdminUserController::class);
-    });
+// Khu vực Quản trị Hệ thống (Dành riêng cho Admin)
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::patch('users/{id}/toggle-status', [AdminUserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::patch('users/{id}/role', [AdminUserController::class, 'updateRole'])->name('users.update-role');
+    Route::resource('users', AdminUserController::class);
 });
 Route::middleware(['auth', 'role:customer'])
     ->post(

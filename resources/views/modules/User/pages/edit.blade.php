@@ -5,7 +5,11 @@
                 {{ __('Hồ sơ cá nhân & Cài đặt tài khoản') }}
             </h1>
             <p class="text-xs text-ink/60 mt-0.5">
-                Quản lý thông tin liên hệ, sổ địa chỉ nhận hàng và các thiết lập bảo mật tài khoản.
+                @if ($user->isCustomer())
+                    {{ __('Quản lý thông tin liên hệ, sổ địa chỉ nhận hàng và các thiết lập bảo mật tài khoản.') }}
+                @else
+                    {{ __('Quản lý thông tin liên hệ và các thiết lập bảo mật tài khoản.') }}
+                @endif
             </p>
         </div>
     </x-slot>
@@ -17,10 +21,12 @@
                 @include('modules.User.components.update-profile-information-form')
             </div>
 
-            {{-- 2. Sổ địa chỉ nhận hàng --}}
-            <div class="p-6 sm:p-8 bg-surface border border-ink/10 rounded-2xl shadow-xs">
-                @include('modules.User.components.user-address-manager')
-            </div>
+            {{-- 2. Sổ địa chỉ nhận hàng (Chỉ hiển thị cho tài khoản Khách hàng) --}}
+            @if ($user->isCustomer())
+                <div class="p-6 sm:p-8 bg-surface border border-ink/10 rounded-2xl shadow-xs">
+                    @include('modules.User.components.user-address-manager')
+                </div>
+            @endif
 
             {{-- 3. Đổi mật khẩu tài khoản --}}
             <div class="p-6 sm:p-8 bg-surface border border-ink/10 rounded-2xl shadow-xs">

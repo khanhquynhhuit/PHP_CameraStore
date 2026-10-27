@@ -86,6 +86,11 @@ class UserService
             throw new BusinessException('Bạn không thể tự hạ quyền Quản trị viên của chính mình!');
         }
 
+        // Quy tắc an toàn: Không cho phép hạ quyền Quản trị viên khi chỉ có duy nhất 1 Quản trị viên
+        if ($user->isAdmin() && $roleEnum !== RoleName::ADMIN && User::where('role', RoleName::ADMIN)->count() <= 1) {
+            throw new BusinessException('Không thể hạ quyền Quản trị viên khi hệ thống chỉ có duy nhất 1 Quản trị viên!');
+        }
+
         $this->userRepository->updateRole($user, $roleEnum);
 
         return $user;
@@ -137,9 +142,14 @@ class UserService
     {
         $user = $this->getUserDetail($id);
 
-        // Quy tắc an toàn: Không cho phép tự xóa tài khoản của chính mình
+        // Quy tắc an toàn 1: Không cho phép tự xóa tài khoản của chính mình
         if ($currentUser && (int) $currentUser->id === (int) $user->id) {
             throw new BusinessException('Bạn không thể tự xóa tài khoản của chính mình!');
+        }
+
+        // Quy tắc an toàn 2: Quản trị viên không được xóa tài khoản khi chỉ có duy nhất 1 tài khoản quản trị viên
+        if ($user->isAdmin() && User::where('role', RoleName::ADMIN)->count() <= 1) {
+            throw new BusinessException('Không thể xóa tài khoản Quản trị viên khi hệ thống chỉ có duy nhất 1 Quản trị viên!');
         }
 
         return $this->userRepository->delete($user);

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Enums\RoleName;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -181,5 +182,73 @@ class ProfileTest extends TestCase
         $this->assertNull($addr2025->district);
         $this->assertSame('Thành phố Hồ Chí Minh', $addr2025->province);
         $this->assertSame('Phường Bến Nghé', $addr2025->ward);
+    }
+
+    public function test_admin_profile_does_not_show_shipping_address_section(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->get('/profile');
+        $response->assertOk();
+        $response->assertDontSeeText('Sổ địa chỉ nhận hàng');
+        $response->assertDontSeeText('Thêm địa chỉ nhận hàng');
+    }
+
+    public function test_admin_cannot_add_shipping_address(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->post('/profile/addresses', [
+            'receiver_name' => 'Admin Name',
+            'phone' => '0912345678',
+            'province' => 'Hà Nội',
+            'ward' => 'Dịch Vọng Hậu',
+            'detail' => 'Tầng 1 tòa nhà admin',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+        $this->assertCount(0, $admin->fresh()->addresses);
+    }
+
+    public function test_sole_admin_cannot_delete_their_account(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $this->assertEquals(1, User::where('role', RoleName::ADMIN)->count());
+
+        $response = $this->actingAs($admin)->delete('/profile', [
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+        $this->assertNotNull($admin->fresh());
+    }
+
+    public function test_manager_profile_does_not_show_shipping_address_section(): void
+    {
+        $manager = User::factory()->staff()->create();
+
+        $response = $this->actingAs($manager)->get('/profile');
+        $response->assertOk();
+        $response->assertDontSeeText('Sổ địa chỉ nhận hàng');
+        $response->assertDontSeeText('Thêm địa chỉ nhận hàng');
+    }
+
+    public function test_manager_cannot_add_shipping_address(): void
+    {
+        $manager = User::factory()->staff()->create();
+
+        $response = $this->actingAs($manager)->post('/profile/addresses', [
+            'receiver_name' => 'Manager Name',
+            'phone' => '0912345678',
+            'province' => 'Hà Nội',
+            'ward' => 'Dịch Vọng Hậu',
+            'detail' => 'Tầng 2 showroom camera',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+        $this->assertCount(0, $manager->fresh()->addresses);
     }
 }

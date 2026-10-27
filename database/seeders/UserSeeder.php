@@ -30,11 +30,11 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // 2. Nhân viên bán hàng chuẩn theo đề bài (Staff)
+        // 2. Quản lý cửa hàng chuẩn theo đề bài (Manager / Staff)
         User::query()->firstOrCreate(
             ['email' => 'staff@camerastore.vn'],
             [
-                'name' => 'Nhân viên bán hàng',
+                'name' => 'Quản lý cửa hàng',
                 'password' => $defaultPassword,
                 'phone' => '0902345678',
                 'role' => RoleName::STAFF,

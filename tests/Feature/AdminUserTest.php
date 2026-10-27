@@ -97,4 +97,46 @@ class AdminUserTest extends TestCase
 
         $this->assertEquals(RoleName::ADMIN, $admin->fresh()->role);
     }
+
+    public function test_staff_receives_financial_dashboard_data_and_admin_does_not(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $staff = User::factory()->staff()->create();
+
+        // Staff sees financial dashboard data
+        $staffResponse = $this->actingAs($staff)->get(route('dashboard'));
+        $staffResponse->assertStatus(200);
+        $staffResponse->assertViewHas('dashboardData');
+        $this->assertNotNull($staffResponse->viewData('dashboardData'));
+
+        // Admin visits dashboard and does NOT receive financial revenue data
+        $adminResponse = $this->actingAs($admin)->get(route('dashboard'));
+        $adminResponse->assertStatus(200);
+        $adminResponse->assertViewHas('dashboardData', null);
+    }
+
+    public function test_admin_is_forbidden_from_staff_store_pages(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)->get(route('admin.products.index'))->assertStatus(403);
+        $this->actingAs($admin)->get(route('admin.categories.index'))->assertStatus(403);
+        $this->actingAs($admin)->get(route('admin.orders.index'))->assertStatus(403);
+        $this->actingAs($admin)->get(route('admin.inventory.index'))->assertStatus(403);
+    }
+
+    public function test_sole_admin_cannot_be_deleted_by_admin(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->delete(route('admin.users.destroy', $admin->id));
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+        $this->assertNotNull($admin->fresh());
+    }
+
+    public function test_role_label_returns_quan_ly_for_staff(): void
+    {
+        $this->assertSame('Quản lý', RoleName::STAFF->label());
+    }
 }

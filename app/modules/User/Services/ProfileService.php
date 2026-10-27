@@ -2,8 +2,10 @@
 
 namespace App\Modules\User\Services;
 
+use App\Exceptions\BusinessException;
 use App\Exceptions\ResourceNotFoundException;
 use App\Models\Address;
+use App\Models\Enums\RoleName;
 use App\Models\User;
 use App\Modules\User\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
@@ -106,6 +108,11 @@ class ProfileService
      */
     public function deleteAccount(User $user): void
     {
+        // Quy tắc an toàn: Quản trị viên không được xóa tài khoản khi chỉ có duy nhất 1 tài khoản quản trị viên
+        if ($user->isAdmin() && User::where('role', RoleName::ADMIN)->count() <= 1) {
+            throw new BusinessException('Không thể xóa tài khoản Quản trị viên khi hệ thống chỉ có duy nhất 1 Quản trị viên!');
+        }
+
         Auth::logout();
         $user->delete();
     }

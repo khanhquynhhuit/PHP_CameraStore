@@ -96,11 +96,19 @@ class User extends Authenticatable
     }
 
     /**
-     * Kiểm tra vai trò staff
+     * Kiểm tra vai trò quản lý (manager / staff)
      */
     public function isStaff(): bool
     {
         return $this->role === RoleName::STAFF;
+    }
+
+    /**
+     * Bí danh kiểm tra vai trò quản lý (Manager)
+     */
+    public function isManager(): bool
+    {
+        return $this->isStaff();
     }
 
     /**

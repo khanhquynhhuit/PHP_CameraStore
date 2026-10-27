@@ -17,9 +17,13 @@ class ProductTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $staff;
+
     private User $customer;
+
     private Category $category;
+
     private Brand $brand;
 
     protected function setUp(): void
@@ -52,16 +56,18 @@ class ProductTest extends TestCase
         $this->actingAs($this->customer)->get(route('admin.products.create'))->assertStatus(403);
     }
 
-    public function test_admin_and_staff_can_access_admin_product_pages(): void
+    public function test_admin_is_forbidden_from_admin_product_pages(): void
     {
-        // Admin
-        $this->actingAs($this->admin)->get(route('admin.products.index'))->assertStatus(200);
-        $this->actingAs($this->admin)->get(route('admin.inventory.index'))->assertStatus(200);
-        $this->actingAs($this->admin)->get(route('admin.products.create'))->assertStatus(200);
+        $this->actingAs($this->admin)->get(route('admin.products.index'))->assertStatus(403);
+        $this->actingAs($this->admin)->get(route('admin.inventory.index'))->assertStatus(403);
+        $this->actingAs($this->admin)->get(route('admin.products.create'))->assertStatus(403);
+    }
 
-        // Staff
+    public function test_staff_can_access_admin_product_pages(): void
+    {
         $this->actingAs($this->staff)->get(route('admin.products.index'))->assertStatus(200);
         $this->actingAs($this->staff)->get(route('admin.inventory.index'))->assertStatus(200);
+        $this->actingAs($this->staff)->get(route('admin.products.create'))->assertStatus(200);
     }
 
     /* =========================================================================
@@ -166,10 +172,10 @@ class ProductTest extends TestCase
     }
 
     /* =========================================================================
-     * 3. ADMIN PRODUCT CRUD (THÊM, SỬA, XÓA & UPLOAD ẢNH)
+     * 3. STAFF PRODUCT CRUD (THÊM, SỬA, XÓA & UPLOAD ẢNH)
      * ========================================================================= */
 
-    public function test_admin_can_create_product_with_image_upload(): void
+    public function test_staff_can_create_product_with_image_upload(): void
     {
         Storage::fake('public');
 
@@ -189,7 +195,7 @@ class ProductTest extends TestCase
             'image' => $fakeImage,
         ];
 
-        $response = $this->actingAs($this->admin)->post(route('admin.products.store'), $productData);
+        $response = $this->actingAs($this->staff)->post(route('admin.products.store'), $productData);
 
         $response->assertRedirect(route('admin.products.index'));
         $response->assertSessionHas('success');
@@ -204,13 +210,13 @@ class ProductTest extends TestCase
         $newProduct = Product::where('sku', 'SON-A7R5-CRUD')->first();
         $this->assertNotNull($newProduct);
         $this->assertCount(1, $newProduct->productImages);
-        $this->assertTrue((bool)$newProduct->productImages->first()->is_primary);
+        $this->assertTrue((bool) $newProduct->productImages->first()->is_primary);
     }
 
     public function test_store_product_validates_required_fields_and_unique_sku(): void
     {
         // 1. Thử gửi dữ liệu trống
-        $response = $this->actingAs($this->admin)->post(route('admin.products.store'), []);
+        $response = $this->actingAs($this->staff)->post(route('admin.products.store'), []);
         $response->assertSessionHasErrors(['name', 'category_id', 'brand_id', 'sku', 'price', 'stock']);
 
         // 2. Thử trùng mã SKU
@@ -220,7 +226,7 @@ class ProductTest extends TestCase
             'sku' => 'DUPLICATE-SKU-TEST',
         ]);
 
-        $responseDup = $this->actingAs($this->admin)->post(route('admin.products.store'), [
+        $responseDup = $this->actingAs($this->staff)->post(route('admin.products.store'), [
             'name' => 'Máy ảnh khác',
             'category_id' => $this->category->id,
             'brand_id' => $this->brand->id,
@@ -234,7 +240,7 @@ class ProductTest extends TestCase
 
     public function test_store_product_validates_original_price_cannot_be_less_than_selling_price(): void
     {
-        $response = $this->actingAs($this->admin)->post(route('admin.products.store'), [
+        $response = $this->actingAs($this->staff)->post(route('admin.products.store'), [
             'name' => 'Máy ảnh giảm giá ảo',
             'category_id' => $this->category->id,
             'brand_id' => $this->brand->id,
@@ -247,7 +253,7 @@ class ProductTest extends TestCase
         $response->assertSessionHasErrors(['original_price']);
     }
 
-    public function test_admin_can_update_product_details(): void
+    public function test_staff_can_update_product_details(): void
     {
         $product = Product::factory()->create([
             'name' => 'Nikon Z8 Cũ',
@@ -268,7 +274,7 @@ class ProductTest extends TestCase
             'status' => 'active',
         ];
 
-        $response = $this->actingAs($this->admin)->put(route('admin.products.update', $product->id), $updateData);
+        $response = $this->actingAs($this->staff)->put(route('admin.products.update', $product->id), $updateData);
 
         $response->assertRedirect(route('admin.products.index'));
         $response->assertSessionHas('success');
@@ -281,7 +287,7 @@ class ProductTest extends TestCase
         ]);
     }
 
-    public function test_admin_can_delete_product(): void
+    public function test_staff_can_delete_product(): void
     {
         $product = Product::factory()->create([
             'category_id' => $this->category->id,
@@ -289,7 +295,7 @@ class ProductTest extends TestCase
             'sku' => 'DELETE-ME-TEST',
         ]);
 
-        $response = $this->actingAs($this->admin)->delete(route('admin.products.destroy', $product->id));
+        $response = $this->actingAs($this->staff)->delete(route('admin.products.destroy', $product->id));
 
         $response->assertRedirect(route('admin.products.index'));
         $response->assertSessionHas('success');
@@ -301,7 +307,7 @@ class ProductTest extends TestCase
      * 4. MÀN HÌNH QUẢN LÝ KHO & CẬP NHẬT TỒN KHO NHANH (ĐỢT 3)
      * ========================================================================= */
 
-    public function test_admin_can_view_inventory_dashboard_and_filter_low_stock(): void
+    public function test_staff_can_view_inventory_dashboard_and_filter_low_stock(): void
     {
         // 1. Máy ảnh còn nhiều (an toàn)
         Product::factory()->create([
@@ -328,7 +334,7 @@ class ProductTest extends TestCase
         ]);
 
         // Xem toàn bộ kho
-        $response = $this->actingAs($this->admin)->get(route('admin.inventory.index'));
+        $response = $this->actingAs($this->staff)->get(route('admin.inventory.index'));
         $response->assertStatus(200);
         $response->assertViewHas(['thongKeKho', 'danhSachSanPham']);
 
@@ -339,21 +345,21 @@ class ProductTest extends TestCase
         $this->assertEquals(1, $thongKe['an_toan']);
 
         // Lọc máy ảnh sắp hết hàng
-        $responseLow = $this->actingAs($this->admin)->get(route('admin.inventory.index', ['stock_status' => 'low_stock']));
+        $responseLow = $this->actingAs($this->staff)->get(route('admin.inventory.index', ['stock_status' => 'low_stock']));
         $responseLow->assertStatus(200);
         $lowProducts = $responseLow->viewData('danhSachSanPham');
         $this->assertEquals(1, $lowProducts->total());
         $this->assertEquals('Canon Sắp Hết Hàng', $lowProducts->first()->name);
 
         // Lọc máy ảnh hết hàng
-        $responseOut = $this->actingAs($this->admin)->get(route('admin.inventory.index', ['stock_status' => 'out_of_stock']));
+        $responseOut = $this->actingAs($this->staff)->get(route('admin.inventory.index', ['stock_status' => 'out_of_stock']));
         $responseOut->assertStatus(200);
         $outProducts = $responseOut->viewData('danhSachSanPham');
         $this->assertEquals(1, $outProducts->total());
         $this->assertEquals('Nikon Đã Hết Hàng', $outProducts->first()->name);
     }
 
-    public function test_admin_can_quick_update_stock(): void
+    public function test_staff_can_quick_update_stock(): void
     {
         $product = Product::factory()->create([
             'name' => 'Fujifilm Cần Nhập Kho',
@@ -362,7 +368,7 @@ class ProductTest extends TestCase
             'stock' => 2,
         ]);
 
-        $response = $this->actingAs($this->admin)->patch(route('admin.inventory.quick-update', $product->id), [
+        $response = $this->actingAs($this->staff)->patch(route('admin.inventory.quick-update', $product->id), [
             'stock' => 25,
         ]);
 
@@ -380,7 +386,7 @@ class ProductTest extends TestCase
             'stock' => 10,
         ]);
 
-        $response = $this->actingAs($this->admin)->patch(route('admin.inventory.quick-update', $product->id), [
+        $response = $this->actingAs($this->staff)->patch(route('admin.inventory.quick-update', $product->id), [
             'stock' => -5,
         ]);
 

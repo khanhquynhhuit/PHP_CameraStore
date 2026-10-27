@@ -15,7 +15,7 @@ enum RoleName: string
     {
         return match ($this) {
             self::ADMIN => 'Quản trị viên',
-            self::STAFF => 'Nhân viên',
+            self::STAFF => 'Quản lý',
             self::CUSTOMER => 'Khách hàng',
         };
     }

@@ -48,13 +48,21 @@ class UserFactory extends Factory
     }
 
     /**
-     * Khởi tạo tài khoản Nhân viên
+     * Khởi tạo tài khoản Quản lý (Staff / Manager)
      */
     public function staff(): static
     {
         return $this->state(fn (array $attributes) => [
             'role' => RoleName::STAFF,
         ]);
+    }
+
+    /**
+     * Bí danh khởi tạo tài khoản Quản lý (Manager)
+     */
+    public function manager(): static
+    {
+        return $this->staff();
     }
 
     /**

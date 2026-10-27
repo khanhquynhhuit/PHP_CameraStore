@@ -17,7 +17,8 @@ class DashboardController extends Controller
     {
         $dashboardData = null;
 
-        if ($request->user()->isAdmin()) {
+        // Báo cáo Tài chính & Doanh thu dành cho Nhân viên (Staff) vận hành cửa hàng
+        if ($request->user()->isStaff()) {
             $dashboardData =
                 $this->dashboardService->getAdminDashboardData();
         }

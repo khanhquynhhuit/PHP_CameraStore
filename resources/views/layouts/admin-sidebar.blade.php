@@ -16,7 +16,7 @@
                             @if (Auth::user()->isAdmin())
                                 Admin Portal
                             @else
-                                Staff Workspace
+                                Manager Workspace
                             @endif
                         </span>
                     </div>
@@ -35,27 +35,35 @@
                     <span>Bảng điều khiển</span>
                 </a>
 
-                <p class="px-3 pt-4 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-ink/60">
-                    Quản lý Cửa hàng
-                </p>
+                @if (Auth::user()->isStaff())
+                    <p class="px-3 pt-4 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-ink/60">
+                        Quản lý Cửa hàng
+                    </p>
 
-                <a href="{{ route('admin.products.index') }}"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.products.*') ? 'bg-primary text-cream font-semibold shadow-sm' : 'text-ink/80 hover:bg-sand/60 hover:text-primary-dark' }}">
-                    <span>📦</span>
-                    <span>Quản lý Sản phẩm</span>
-                </a>
+                    <a href="{{ route('admin.products.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.products.*') ? 'bg-primary text-cream font-semibold shadow-sm' : 'text-ink/80 hover:bg-sand/60 hover:text-primary-dark' }}">
+                        <span>📦</span>
+                        <span>Quản lý Sản phẩm</span>
+                    </a>
 
-                <a href="{{ route('admin.categories.index') }}"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.categories.*') ? 'bg-primary text-cream font-semibold shadow-sm' : 'text-ink/80 hover:bg-sand/60 hover:text-primary-dark' }}">
-                    <span>🗂️</span>
-                    <span>Quản lý Danh mục</span>
-                </a>
+                    <a href="{{ route('admin.inventory.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.inventory.*') ? 'bg-primary text-cream font-semibold shadow-sm' : 'text-ink/80 hover:bg-sand/60 hover:text-primary-dark' }}">
+                        <span>🏭</span>
+                        <span>Quản lý Kho hàng</span>
+                    </a>
 
-                <a href="{{ route('admin.orders.index') }}"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.orders.*') ? 'bg-primary text-cream font-semibold shadow-sm' : 'text-ink/80 hover:bg-sand/60 hover:text-primary-dark' }}">
-                    <span>🧾</span>
-                    <span>Quản lý Đơn hàng</span>
-                </a>
+                    <a href="{{ route('admin.categories.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.categories.*') ? 'bg-primary text-cream font-semibold shadow-sm' : 'text-ink/80 hover:bg-sand/60 hover:text-primary-dark' }}">
+                        <span>🗂️</span>
+                        <span>Quản lý Danh mục</span>
+                    </a>
+
+                    <a href="{{ route('admin.orders.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.orders.*') ? 'bg-primary text-cream font-semibold shadow-sm' : 'text-ink/80 hover:bg-sand/60 hover:text-primary-dark' }}">
+                        <span>🧾</span>
+                        <span>Quản lý Đơn hàng</span>
+                    </a>
+                @endif
 
                 @if (Auth::user()->isAdmin())
                     <p class="px-3 pt-4 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-ink/60">
@@ -65,7 +73,7 @@
                     <a href="{{ route('admin.users.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition {{ request()->routeIs('admin.users.*') ? 'bg-primary text-cream font-semibold shadow-sm' : 'text-ink/80 hover:bg-sand/60 hover:text-primary-dark' }}">
                         <span>👥</span>
-                        <span>Quản lý Người dùng</span>
+                        <span>Quản lý Người dùng & Phân quyền</span>
                     </a>
                 @endif
             </nav>

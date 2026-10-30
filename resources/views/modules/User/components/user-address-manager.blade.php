@@ -156,6 +156,7 @@
                     name="receiver_name" 
                     label="Họ tên người nhận" 
                     placeholder="Ví dụ: Nguyễn Văn A" 
+                    oninput="this.value = this.value.replace(/[0-9!@#$%^&*()_+={}\[\]:;<>,.?\/\\~-]/g, '')"
                     required 
                 />
 
@@ -163,6 +164,7 @@
                     name="phone" 
                     label="Số điện thoại nhận hàng" 
                     placeholder="Ví dụ: 0901234567" 
+                    maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                     required 
                 />
             </div>

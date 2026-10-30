@@ -44,9 +44,15 @@ class CheckoutRequest extends FormRequest
     {
         return [
             'address_id' => ['nullable'],
-            'receiver_name' => ['required', 'string', 'max:100'],
-            'phone' => ['required', 'string', 'max:10'],
-            'shipping_address' => ['required', 'string', 'max:500'],
+            // ĐÃ THÊM: min:2 và regex chỉ cho phép chữ cái & khoảng trắng (chặn #@!#, số)
+            'receiver_name' => ['required', 'string', 'min:2', 'max:100', 'regex:/^[\pL\s]+$/u'],
+            
+            // ĐÃ THÊM: regex bắt buộc chuẩn 10 số và bắt đầu bằng số 0
+            'phone' => ['required', 'string', 'regex:/^0[0-9]{9}$/'],
+            
+            // ĐÃ THÊM: min:10 để tránh người dùng nhập địa chỉ kiểu "đá" hay "a"
+            'shipping_address' => ['required', 'string', 'min:10', 'max:500'],
+            
             'payment_method' => ['required', new Enum(PaymentMethod::class)],
             'coupon_code' => ['nullable', 'string', 'max:50'],
             'note' => ['nullable', 'string', 'max:500'],
@@ -59,11 +65,17 @@ class CheckoutRequest extends FormRequest
     {
         return [
             'receiver_name.required' => 'Họ tên người nhận không được để trống.',
+            'receiver_name.min' => 'Họ tên người nhận phải có ít nhất 2 ký tự.',
             'receiver_name.max' => 'Họ tên người nhận không được vượt quá 100 ký tự.',
-            'phone.required' => 'Số điện thoại người nhận không được để trống.',
-            'phone.max' => 'Số điện thoại không được vượt quá 10 ký tự.',
+            'receiver_name.regex' => 'Họ tên người nhận không hợp lệ, không được chứa số hoặc ký tự đặc biệt.',
+            
+            'phone.required' => 'Số điện thoại người nhận không đúng hoặc đang để trống.',
+            'phone.regex' => 'Số điện thoại không hợp lệ. Vui lòng nhập đúng 10 số và bắt đầu bằng số 0.',
+            
             'shipping_address.required' => 'Địa chỉ giao hàng không được để trống.',
+            'shipping_address.min' => 'Địa chỉ giao hàng quá ngắn, vui lòng nhập chi tiết hơn.',
             'shipping_address.max' => 'Địa chỉ giao hàng không được vượt quá 500 ký tự.',
+            
             'payment_method.required' => 'Vui lòng chọn phương thức thanh toán.',
             'payment_method.Illuminate\Validation\Rules\Enum' => 'Phương thức thanh toán không hợp lệ.',
         ];

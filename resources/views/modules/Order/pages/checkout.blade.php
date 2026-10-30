@@ -29,13 +29,38 @@
                         required 
                     />
 
-                    <x-form-input 
-                        name="shipping_address" 
-                        label="Địa chỉ nhận hàng" 
-                        :value="old('shipping_address', $formattedAddress ?? '')" 
-                        placeholder="VD: Số 144 Xuân Thủy, Phường Dịch Vọng Hậu, Quận Cầu Giấy, Hà Nội" 
-                        required 
-                    />
+                    <!-- ============ ĐÃ THÊM: KHỐI CHỌN ĐỊA CHỈ TỪ API ============ -->
+                    <div class="mb-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                        <label class="block font-medium text-sm text-ink mb-2">Chọn khu vực giao hàng</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                            <select id="api_province" class="border-gray-300 focus:border-primary focus:ring-primary rounded-md shadow-sm w-full text-sm">
+                                <option value="">Chọn Tỉnh/Thành</option>
+                            </select>
+                            <select id="api_district" class="border-gray-300 focus:border-primary focus:ring-primary rounded-md shadow-sm w-full text-sm" disabled>
+                                <option value="">Chọn Quận/Huyện</option>
+                            </select>
+                            <select id="api_ward" class="border-gray-300 focus:border-primary focus:ring-primary rounded-md shadow-sm w-full text-sm" disabled>
+                                <option value="">Chọn Phường/Xã</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-medium text-sm text-ink mb-1">Số nhà, tên đường</label>
+                            <input type="text" id="api_street" class="border-gray-300 focus:border-primary focus:ring-primary rounded-md shadow-sm w-full text-sm" placeholder="VD: Số 144 Xuân Thủy" />
+                        </div>
+                    </div>
+                    <!-- ========================================================= -->
+
+                    <!-- GIỮ NGUYÊN FIELD CŨ ĐỂ KHÔNG LỖI BACKEND, NHƯNG KHÓA READONLY ĐỂ TỰ ĐỘNG ĐIỀN TỪ API -->
+                    <div class="mb-4">
+                        <x-form-input 
+                            name="shipping_address" 
+                            label="Địa chỉ hoàn chỉnh (Hệ thống tự động điền)" 
+                            :value="old('shipping_address', $formattedAddress ?? '')" 
+                            placeholder="Vui lòng chọn khu vực và nhập số nhà ở trên..." 
+                            readonly
+                            required 
+                        />
+                    </div>
 
                     <x-form-select 
                         name="payment_method" 

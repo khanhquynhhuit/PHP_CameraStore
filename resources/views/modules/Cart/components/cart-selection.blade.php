@@ -12,66 +12,76 @@
     selectedAddressId: '{{ old('address_id', $addresses->firstWhere('is_default', true)?->id ?? $addresses->first()?->id ?? '') }}',
     receiverName: '{{ addslashes(old('receiver_name', auth()->user()->name ?? '')) }}',
     phone: '{{ addslashes(old('phone', auth()->user()->phone ?? '')) }}',
+    orderNote: '{{ addslashes(old('note', '')) }}',
     
-   // BIẾN CHO API ĐỊA CHỈ (CHỈ 2 CẤP: TỈNH & XÃ)
-    items: {{ json_encode($items->map(function($item) {
-        return [
-            'id' => $item->id,
-            'price' => (float) $item->product->price,
-            'quantity' => (int) $item->quantity,
-            'selected' => true
-        ];
-    })) }},
-    selectAll: true,
-    paymentMethod: '{{ old('payment_method', 'cod') }}',
-    selectedAddressId: '{{ old('address_id', $addresses->firstWhere('is_default', true)?->id ?? $addresses->first()?->id ?? '') }}',
-    receiverName: '{{ addslashes(old('receiver_name', auth()->user()->name ?? '')) }}',
-    phone: '{{ addslashes(old('phone', auth()->user()->phone ?? '')) }}',
-    
-    // BIẾN API ĐỊA CHỈ
-    provincesData: [],
-    wardsData: [],
-    selectedProvince: '',
-    selectedWard: '',
+    // Vietnam Provinces 2025 API (OpenAPI v2 - Chuẩn giống Hồ sơ cá nhân)
+    provinces: [],
+    wards: [],
+    selectedProvinceCode: '',
+    selectedWardCode: '',
+    provinceName: '',
+    wardName: '',
     streetInput: '',
-    isLoadingApi: true,
+    isLoadingProvinces: false,
+    isLoadingWards: false,
     
     get customAddress() {
         let parts = [];
         if (this.streetInput.trim()) parts.push(this.streetInput.trim());
-        
-        if (this.selectedProvince && this.provincesData.length > 0) {
-            const p = this.provincesData.find(x => String(x.Id) === String(this.selectedProvince));
-            if (p) {
-                if (this.selectedWard) {
-                    for (let d of p.Districts) {
-                        const w = d.Wards.find(x => String(x.Id) === String(this.selectedWard));
-                        if (w) {
-                            parts.push(w.Name);
-                            break;
-                        }
-                    }
-                }
-                parts.push(p.Name);
-            }
-        }
+        if (this.wardName.trim()) parts.push(this.wardName.trim());
+        if (this.provinceName.trim()) parts.push(this.provinceName.trim());
         return parts.join(', ');
     },
     
     async init() {
+        await this.loadProvinces();
+    },
+    
+    async loadProvinces() {
+        this.isLoadingProvinces = true;
         try {
-            const res = await fetch('https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json');
-            this.provincesData = await res.json();
+            const res = await fetch('https://provinces.open-api.vn/api/v2/p/');
+            if (!res.ok) throw new Error('Không thể tải danh sách Tỉnh/Thành');
+            this.provinces = await res.json();
         } catch (e) {
-            console.error('Lỗi tải dữ liệu địa chỉ:', e);
+            console.warn('Lỗi gọi API Tỉnh/Thành phố:', e);
         } finally {
-            this.isLoadingApi = false;
+            this.isLoadingProvinces = false;
         }
     },
     
-    // Các hàm xử lý giỏ hàng cũ giữ nguyên bên dưới...
-    // Các biến voucher cũ giữ nguyên
-    orderNote: '{{ addslashes(old('note', '')) }}',
+    async onProvinceChange() {
+        const found = this.provinces.find(p => String(p.code) === String(this.selectedProvinceCode));
+        this.provinceName = found ? found.name : '';
+        this.wards = [];
+        this.selectedWardCode = '';
+        this.wardName = '';
+
+        if (this.selectedProvinceCode) {
+            await this.loadWards(this.selectedProvinceCode);
+        }
+    },
+    
+    async loadWards(provCode) {
+        this.isLoadingWards = true;
+        try {
+            const res = await fetch(`https://provinces.open-api.vn/api/v2/p/${provCode}?depth=2`);
+            if (!res.ok) throw new Error('Không thể tải danh sách Phường/Xã');
+            const data = await res.json();
+            this.wards = data.wards || [];
+        } catch (e) {
+            console.warn('Lỗi gọi API Phường/Xã:', e);
+        } finally {
+            this.isLoadingWards = false;
+        }
+    },
+    
+    onWardChange() {
+        const found = this.wards.find(w => String(w.code) === String(this.selectedWardCode));
+        this.wardName = found ? found.name : '';
+    },
+    
+    // Voucher & Tính tiền
     couponInput: '',
     appliedCoupon: null,
     couponMessage: '',
@@ -97,16 +107,6 @@
     },
     get totalPayment() {
         return Math.max(0, this.selectedSubtotal - this.discountAmount);
-    },
-    
-    // Hàm gọi API Tỉnh/Thành khi x-data khởi tạo
-    async init() {
-        try {
-            const res = await fetch('https://provinces.open-api.vn/api/?depth=3');
-            this.provincesData = await res.json();
-        } catch (e) {
-            console.error('Không thể tải dữ liệu địa chỉ API');
-        }
     },
     
     async applyCoupon() {
@@ -300,10 +300,27 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   alert('Vui lòng chọn ít nhất một sản phẩm để đặt hàng!');
                   return;
               }
-              if ((selectedAddressId === 'new' || {{ $addresses->isEmpty() ? 'true' : 'false' }}) && (!receiverName.trim() || !phone.trim() || !customAddress.trim())) {
-                  $event.preventDefault();
-                  alert('Vui lòng điền đủ Tỉnh, Huyện, Xã và Số nhà!');
-                  return;
+              if (selectedAddressId === 'new' || {{ $addresses->isEmpty() ? 'true' : 'false' }}) {
+                  if (!receiverName.trim() || !phone.trim()) {
+                      $event.preventDefault();
+                      alert('Vui lòng nhập đầy đủ họ tên và số điện thoại người nhận!');
+                      return;
+                  }
+                  if (!selectedProvinceCode || !provinceName.trim()) {
+                      $event.preventDefault();
+                      alert('Vui lòng chọn Tỉnh / Thành phố nhận hàng!');
+                      return;
+                  }
+                  if (!selectedWardCode || !wardName.trim()) {
+                      $event.preventDefault();
+                      alert('Vui lòng chọn Phường / Xã nhận hàng!');
+                      return;
+                  }
+                  if (!streetInput.trim()) {
+                      $event.preventDefault();
+                      alert('Vui lòng nhập số nhà, tên đường nhận hàng!');
+                      return;
+                  }
               }
               if (selectedAddressId !== 'new' && !selectedAddressId && {{ $addresses->isNotEmpty() ? 'true' : 'false' }}) {
                   $event.preventDefault();
@@ -377,10 +394,10 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 </div>
             @endif
 
-            <!-- =============== ĐÃ THÊM API TỈNH THÀNH Ở ĐÂY =============== -->
+            <!-- =============== KHỐI CHỌN ĐỊA CHỈ TỪ API TỈNH/PHƯỜNG (COMBO BOX) =============== -->
             <div x-show="selectedAddressId === 'new' || {{ $addresses->isEmpty() ? 'true' : 'false' }}" 
                  x-cloak
-                 class="space-y-2 mt-3 p-3 bg-base/70 rounded-xl border border-ink/10">
+                 class="space-y-2.5 mt-3 p-3 bg-base/70 rounded-xl border border-ink/10">
                 <p class="text-[11px] font-bold text-ink mb-1">Nhập thông tin người nhận hàng:</p>
                 <div>
                     <input type="text" 
@@ -393,41 +410,45 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <input type="text" 
                            name="phone" 
                            x-model="phone" 
-                           placeholder="Số điện thoại liên hệ *" 
+                           maxlength="10"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                           placeholder="Số điện thoại liên hệ (10 số, bắt đầu bằng 0) *" 
                            class="w-full text-xs rounded-lg bg-surface border-ink/20 focus:border-primary focus:ring-primary p-2 text-ink">
                 </div>
                 
-              <!-- Nhóm 2 ô chọn: Tỉnh/Thành và Phường/Xã -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <select x-model="selectedProvince" 
-                            @change="
-                                selectedWard = ''; 
-                                wardsData = [];
-                                if (selectedProvince) {
-                                    const p = provincesData.find(x => x.Id === selectedProvince);
-                                    if (p && p.Districts) {
-                                        // Gom toàn bộ Phường/Xã của tất cả các Quận/Huyện vào chung một danh sách
-                                        p.Districts.forEach(d => {
-                                            if (d.Wards) wardsData.push(...d.Wards);
-                                        });
-                                    }
-                                }
-                            " 
-                            class="text-xs rounded-lg border-ink/20 p-2 focus:border-primary">
-                        <option value="">Chọn Tỉnh/Thành phố</option>
-                        <template x-for="p in provincesData" :key="p.Id">
-                            <option :value="p.Id" x-text="p.Name"></option>
-                        </template>
-                    </select>
+                <!-- Nhóm 2 combo box: Tỉnh/Thành và Phường/Xã (API chuẩn OpenAPI v2 như Hồ sơ cá nhân) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-medium text-ink mb-1">
+                            Tỉnh / Thành phố <span class="text-danger-ink font-bold">*</span>
+                            <span x-show="isLoadingProvinces" class="text-[10px] text-primary animate-pulse ml-1">(Đang tải...)</span>
+                        </label>
+                        <select x-model="selectedProvinceCode" 
+                                @change="onProvinceChange()" 
+                                :disabled="isLoadingProvinces"
+                                class="w-full text-xs rounded-lg bg-surface border-ink/20 focus:border-primary focus:ring-primary p-2 text-ink cursor-pointer disabled:opacity-50">
+                            <option value="">-- Chọn Tỉnh / Thành phố --</option>
+                            <template x-for="p in provinces" :key="p.code">
+                                <option :value="p.code" x-text="p.name"></option>
+                            </template>
+                        </select>
+                    </div>
 
-                    <select x-model="selectedWard" 
-                            :disabled="!selectedProvince" 
-                            class="text-xs rounded-lg border-ink/20 p-2 focus:border-primary">
-                        <option value="">Chọn Phường/Xã</option>
-                        <template x-for="w in wardsData" :key="w.Id">
-                            <option :value="w.Id" x-text="w.Name"></option>
-                        </template>
-                    </select>
+                    <div>
+                        <label class="block text-[11px] font-medium text-ink mb-1">
+                            Phường / Xã <span class="text-danger-ink font-bold">*</span>
+                            <span x-show="isLoadingWards" class="text-[10px] text-primary animate-pulse ml-1">(Đang tải...)</span>
+                        </label>
+                        <select x-model="selectedWardCode" 
+                                @change="onWardChange()" 
+                                :disabled="!selectedProvinceCode || isLoadingWards"
+                                class="w-full text-xs rounded-lg bg-surface border-ink/20 focus:border-primary focus:ring-primary p-2 text-ink cursor-pointer disabled:opacity-50 disabled:bg-sand/30">
+                            <option value="" x-text="!selectedProvinceCode ? '-- Chọn Tỉnh trước --' : (isLoadingWards ? '-- Đang tải... --' : '-- Chọn Phường / Xã --')"></option>
+                            <template x-for="w in wards" :key="w.code">
+                                <option :value="w.code" x-text="w.name"></option>
+                            </template>
+                        </select>
+                    </div>
                 </div>
                 
                 <div>
@@ -437,10 +458,10 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                            class="w-full text-xs rounded-lg bg-surface border-ink/20 focus:border-primary focus:ring-primary p-2 text-ink">
                 </div>
 
-                <!-- Ô này chứa địa chỉ sau khi ghép nối thành công, bị ẩn khỏi mắt user nhưng Server vẫn đọc được -->
+                <!-- Ô này chứa địa chỉ sau khi ghép nối thành công, gửi về backend -->
                 <input type="hidden" name="shipping_address" :value="customAddress">
             </div>
-            <!-- ============================================================= -->
+            <!-- =================================================================================== -->
         </div>
 
         <div>
@@ -501,7 +522,7 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <input type="text" 
                                x-model="couponInput" 
                                @keydown.enter.prevent="applyCoupon()"
-                               placeholder="Nhập mã (VD: WELCOME10)..." 
+                               placeholder="Nhập mã (VD: WELCOME10, GIAM500K)..." 
                                class="flex-1 uppercase font-bold text-xs rounded-xl bg-base border-ink/20 focus:border-primary focus:ring-primary p-2.5 text-ink">
                         <button type="button" 
                                 @click="applyCoupon()" 
@@ -510,6 +531,32 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             <span x-show="!isApplyingCoupon">Áp dụng</span>
                             <span x-show="isApplyingCoupon" x-cloak>Đang kiểm tra...</span>
                         </button>
+                    </div>
+
+                    <!-- Gợi ý voucher có sẵn -->
+                    <div class="flex items-center gap-1.5 mt-2 flex-wrap">
+                        <span class="text-[11px] text-ink/60 font-medium">Gợi ý:</span>
+                        @if (isset($coupons) && $coupons->isNotEmpty())
+                            @foreach ($coupons as $cp)
+                                <button type="button" 
+                                        @click="couponInput = '{{ $cp->code }}'; applyCoupon();" 
+                                        class="text-[11px] px-2 py-0.5 rounded-lg bg-base border border-ink/15 text-ink hover:border-primary hover:text-primary transition font-mono font-bold"
+                                        title="Đơn tối thiểu: {{ number_format($cp->min_order, 0, ',', '.') }} đ">
+                                    {{ $cp->code }} ({{ $cp->type->value === 'percent' ? '-' . (int)$cp->value . '%' : '-' . number_format($cp->value / 1000, 0) . 'k' }})
+                                </button>
+                            @endforeach
+                        @else
+                            <button type="button" 
+                                    @click="couponInput = 'WELCOME10'; applyCoupon();" 
+                                    class="text-[11px] px-2 py-0.5 rounded-lg bg-base border border-ink/15 text-ink hover:border-primary hover:text-primary transition font-mono font-bold">
+                                WELCOME10 (-10%)
+                            </button>
+                            <button type="button" 
+                                    @click="couponInput = 'GIAM500K'; applyCoupon();" 
+                                    class="text-[11px] px-2 py-0.5 rounded-lg bg-base border border-ink/15 text-ink hover:border-primary hover:text-primary transition font-mono font-bold">
+                                GIAM500K (-500k)
+                            </button>
+                        @endif
                     </div>
                 </div>
             </template>
@@ -528,6 +575,14 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
             <p x-show="couponMessage" x-text="couponMessage" class="mt-1.5 text-xs text-success-ink font-semibold" x-cloak></p>
             <p x-show="couponError" x-text="couponError" class="mt-1.5 text-xs text-danger-ink font-semibold" x-cloak></p>
+
+            <!-- Ghi chú quy định voucher -->
+            <p class="text-[11px] text-ink/60 mt-2 flex items-center gap-1 italic">
+                <svg class="w-3.5 h-3.5 text-ink/50 inline-block shrink-0 not-italic" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>Mỗi đơn hàng chỉ áp dụng 1 mã giảm giá</span>
+            </p>
         </div>
 
         <div class="bg-base p-4 rounded-xl space-y-2.5 text-xs text-ink/70 border border-ink/10">
@@ -588,6 +643,22 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <x-button variant="outline" size="md" :href="route('products.index')" class="w-full">
                 &larr; Tiếp tục chọn thêm máy ảnh
             </x-button>
+        </div>
+
+        <!-- Cam kết -->
+        <div class="pt-4 border-t border-ink/10 space-y-2 text-xs text-ink/70">
+            <div class="flex items-center gap-2">
+                <x-phosphor-check-light class="w-4 h-4 text-success-ink shrink-0 font-bold" />
+                <span>Cam kết chính hãng 100% Sony, Canon, Fuji</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <x-phosphor-check-light class="w-4 h-4 text-success-ink shrink-0 font-bold" />
+                <span>Bảo hành chính hãng 12 - 24 tháng</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <x-phosphor-check-light class="w-4 h-4 text-success-ink shrink-0 font-bold" />
+                <span>Xuất hóa đơn VAT điện tử đầy đủ</span>
+            </div>
         </div>
     </form>
 </div>

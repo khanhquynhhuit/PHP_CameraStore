@@ -4,6 +4,7 @@ namespace App\Modules\Cart\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
+use App\Models\Coupon;
 use App\Modules\Cart\Requests\AddToCartRequest;
 use App\Modules\Cart\Requests\UpdateCartItemRequest;
 use App\Modules\Cart\Services\CartService;
@@ -34,6 +35,12 @@ class CartController extends Controller
 
         $addresses = Address::where('user_id', $userId)->get();
 
+        $coupons = Coupon::where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->get();
+
         return view('modules.Cart.pages.index', [
             'cart' => $cartData['cart'],
             'items' => $cartData['items'],
@@ -41,6 +48,7 @@ class CartController extends Controller
             'totalItems' => $cartData['total_items'],
             'total' => $cartData['total'],
             'addresses' => $addresses,
+            'coupons' => $coupons,
         ]);
     }
 

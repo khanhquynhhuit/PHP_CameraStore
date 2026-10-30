@@ -69,7 +69,7 @@
             name="email"
             label="Địa chỉ Email"
             type="email"
-            placeholder="admin@camerastore.vn"
+            placeholder="Tài khoản của bạn"
             required
             autofocus
             autocomplete="username"

@@ -4,6 +4,7 @@ namespace App\Modules\Order\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use App\Models\Coupon;
 use App\Modules\Order\Requests\CheckoutRequest;
 use App\Modules\Order\Services\OrderService;
 use App\Traits\ApiResponseTrait;
@@ -48,12 +49,19 @@ class CheckoutController extends Controller
         $phone = $address?->phone ?? $user->phone;
         $paymentMethod = $request->query('payment_method', 'cod');
 
+        $coupons = Coupon::where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->get();
+
         return view('modules.Order.pages.checkout', compact(
             'address',
             'formattedAddress',
             'receiverName',
             'phone',
-            'paymentMethod'
+            'paymentMethod',
+            'coupons'
         ));
     }
 

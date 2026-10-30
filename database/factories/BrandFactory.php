@@ -16,7 +16,7 @@ class BrandFactory extends Factory
     public function definition(): array
     {
         $brands = ['Sony', 'Canon', 'Nikon', 'Fujifilm', 'Panasonic', 'Leica', 'Olympus'];
-        $name = fake()->unique()->randomElement($brands) . ' ' . fake()->numerify('##');
+        $name = fake()->unique()->randomElement($brands).' '.fake()->numerify('##');
 
         return [
             'name' => $name,

@@ -25,7 +25,7 @@ class CategoryFactory extends Factory
             'Chân máy & Gimbal',
         ];
 
-        $name = fake()->unique()->randomElement($categories) . ' ' . fake()->numerify('##');
+        $name = fake()->unique()->randomElement($categories).' '.fake()->numerify('##');
 
         return [
             'name' => $name,

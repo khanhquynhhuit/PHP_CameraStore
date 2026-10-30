@@ -33,10 +33,10 @@ class StoreAddressRequest extends FormRequest
             'receiver_name.min' => 'Họ tên người nhận phải có ít nhất 2 ký tự.',
             'receiver_name.max' => 'Họ tên người nhận không được vượt quá 100 ký tự.',
             'receiver_name.regex' => 'Họ tên không hợp lệ, không được chứa số hoặc ký tự đặc biệt.',
-            
+
             'phone.required' => 'Vui lòng nhập số điện thoại người nhận.',
             'phone.regex' => 'Số điện thoại không hợp lệ. Vui lòng nhập đúng 10 số và bắt đầu bằng số 0.',
-            
+
             'province.required' => 'Vui lòng nhập Tỉnh / Thành phố.',
             'district.required' => 'Vui lòng nhập Quận / Huyện.',
             'ward.required' => 'Vui lòng nhập Phường / Xã.',

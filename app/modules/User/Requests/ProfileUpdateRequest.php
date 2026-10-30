@@ -25,7 +25,8 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
-            'phone' => ['nullable', 'string', 'max:20'],
+            // ĐÃ SỬA: Ràng buộc bắt buộc 10 chữ số, bắt đầu bằng số 0
+            'phone' => ['nullable', 'string', 'regex:/^0[0-9]{9}$/'],
         ];
     }
 
@@ -37,7 +38,7 @@ class ProfileUpdateRequest extends FormRequest
             'email.required' => 'Địa chỉ email không được để trống.',
             'email.email' => 'Địa chỉ email không đúng định dạng.',
             'email.unique' => 'Email này đã được sử dụng bởi tài khoản khác.',
-            'phone.max' => 'Số điện thoại không được vượt quá 20 ký tự.',
+            'phone.regex' => 'Số điện thoại không hợp lệ. Vui lòng nhập đúng 10 số và bắt đầu bằng số 0.',
         ];
     }
 }

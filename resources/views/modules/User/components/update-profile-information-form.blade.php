@@ -67,6 +67,7 @@
                 type="text" 
                 :value="old('phone', $user->phone)" 
                 placeholder="Ví dụ: 0901234567"
+                maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
             />
         </div>
 

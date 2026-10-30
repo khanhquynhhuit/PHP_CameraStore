@@ -12,7 +12,65 @@
     selectedAddressId: '{{ old('address_id', $addresses->firstWhere('is_default', true)?->id ?? $addresses->first()?->id ?? '') }}',
     receiverName: '{{ addslashes(old('receiver_name', auth()->user()->name ?? '')) }}',
     phone: '{{ addslashes(old('phone', auth()->user()->phone ?? '')) }}',
-    customAddress: '{{ addslashes(old('shipping_address', '')) }}',
+    
+   // BIẾN CHO API ĐỊA CHỈ (CHỈ 2 CẤP: TỈNH & XÃ)
+    items: {{ json_encode($items->map(function($item) {
+        return [
+            'id' => $item->id,
+            'price' => (float) $item->product->price,
+            'quantity' => (int) $item->quantity,
+            'selected' => true
+        ];
+    })) }},
+    selectAll: true,
+    paymentMethod: '{{ old('payment_method', 'cod') }}',
+    selectedAddressId: '{{ old('address_id', $addresses->firstWhere('is_default', true)?->id ?? $addresses->first()?->id ?? '') }}',
+    receiverName: '{{ addslashes(old('receiver_name', auth()->user()->name ?? '')) }}',
+    phone: '{{ addslashes(old('phone', auth()->user()->phone ?? '')) }}',
+    
+    // BIẾN API ĐỊA CHỈ
+    provincesData: [],
+    wardsData: [],
+    selectedProvince: '',
+    selectedWard: '',
+    streetInput: '',
+    isLoadingApi: true,
+    
+    get customAddress() {
+        let parts = [];
+        if (this.streetInput.trim()) parts.push(this.streetInput.trim());
+        
+        if (this.selectedProvince && this.provincesData.length > 0) {
+            const p = this.provincesData.find(x => String(x.Id) === String(this.selectedProvince));
+            if (p) {
+                if (this.selectedWard) {
+                    for (let d of p.Districts) {
+                        const w = d.Wards.find(x => String(x.Id) === String(this.selectedWard));
+                        if (w) {
+                            parts.push(w.Name);
+                            break;
+                        }
+                    }
+                }
+                parts.push(p.Name);
+            }
+        }
+        return parts.join(', ');
+    },
+    
+    async init() {
+        try {
+            const res = await fetch('https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json');
+            this.provincesData = await res.json();
+        } catch (e) {
+            console.error('Lỗi tải dữ liệu địa chỉ:', e);
+        } finally {
+            this.isLoadingApi = false;
+        }
+    },
+    
+    // Các hàm xử lý giỏ hàng cũ giữ nguyên bên dưới...
+    // Các biến voucher cũ giữ nguyên
     orderNote: '{{ addslashes(old('note', '')) }}',
     couponInput: '',
     appliedCoupon: null,
@@ -40,6 +98,17 @@
     get totalPayment() {
         return Math.max(0, this.selectedSubtotal - this.discountAmount);
     },
+    
+    // Hàm gọi API Tỉnh/Thành khi x-data khởi tạo
+    async init() {
+        try {
+            const res = await fetch('https://provinces.open-api.vn/api/?depth=3');
+            this.provincesData = await res.json();
+        } catch (e) {
+            console.error('Không thể tải dữ liệu địa chỉ API');
+        }
+    },
+    
     async applyCoupon() {
         if (!this.couponInput.trim()) {
             this.couponError = 'Vui lòng nhập mã giảm giá';
@@ -127,7 +196,6 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <!-- Checkbox + Ảnh + Tên sản phẩm -->
                     <div class="flex items-center gap-3">
-                        <!-- Checkbox chọn mua sản phẩm này -->
                         <input type="checkbox" 
                                x-model="items[{{ $index }}].selected" 
                                @change="updateSelectAllState()" 
@@ -162,7 +230,6 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                     <!-- Tăng giảm số lượng và Nút Xóa -->
                     <div class="flex items-center justify-between sm:justify-end gap-4 border-t border-ink/10 sm:border-t-0 pt-2 sm:pt-0 pl-7 sm:pl-0">
-                        <!-- Bộ chọn số lượng -->
                         <div class="flex items-center border border-ink/20 rounded-lg overflow-hidden bg-base">
                             <form method="POST" action="{{ route('cart.update', $item->id) }}" class="inline">
                                 @csrf
@@ -191,7 +258,6 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             </form>
                         </div>
 
-                        <!-- Thành tiền của dòng -->
                         <div class="text-right sm:min-w-[120px]">
                             <span class="block text-xs text-ink/70">Thành tiền</span>
                             <span class="font-heading font-bold tabular-nums !text-black text-sm sm:text-[16px]" style="color: #000000 !important;">
@@ -199,7 +265,6 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             </span>
                         </div>
 
-                        <!-- Nút xóa sản phẩm -->
                         <form method="POST" action="{{ route('cart.destroy', $item->id) }}" class="inline">
                             @csrf
                             @method('DELETE')
@@ -237,7 +302,7 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
               }
               if ((selectedAddressId === 'new' || {{ $addresses->isEmpty() ? 'true' : 'false' }}) && (!receiverName.trim() || !phone.trim() || !customAddress.trim())) {
                   $event.preventDefault();
-                  alert('Vui lòng nhập đầy đủ họ tên, số điện thoại và địa chỉ giao hàng!');
+                  alert('Vui lòng điền đủ Tỉnh, Huyện, Xã và Số nhà!');
                   return;
               }
               if (selectedAddressId !== 'new' && !selectedAddressId && {{ $addresses->isNotEmpty() ? 'true' : 'false' }}) {
@@ -249,12 +314,10 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           ">
         @csrf
 
-        <!-- Danh sách ID sản phẩm được chọn để mua -->
         <template x-for="item in selectedItems" :key="item.id">
             <input type="hidden" name="selected_ids[]" :value="item.id">
         </template>
         
-        <!-- 1. Tiêu đề tóm tắt -->
         <div class="border-b border-ink/10 pb-3 flex items-center justify-between">
             <h3 class="font-heading text-base font-semibold tracking-tight text-ink">
                 Tóm tắt thanh toán
@@ -264,7 +327,6 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             </span>
         </div>
 
-        <!-- 2. Chọn Địa chỉ giao hàng -->
         <div>
             <div class="flex items-center justify-between mb-2">
                 <label class="block font-heading text-xs font-semibold uppercase tracking-tight text-ink flex items-center gap-1.5">
@@ -315,7 +377,7 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 </div>
             @endif
 
-            <!-- Khối nhập địa chỉ trực tiếp (khi chọn 'new' hoặc chưa có địa chỉ nào) -->
+            <!-- =============== ĐÃ THÊM API TỈNH THÀNH Ở ĐÂY =============== -->
             <div x-show="selectedAddressId === 'new' || {{ $addresses->isEmpty() ? 'true' : 'false' }}" 
                  x-cloak
                  class="space-y-2 mt-3 p-3 bg-base/70 rounded-xl border border-ink/10">
@@ -324,7 +386,6 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <input type="text" 
                            name="receiver_name" 
                            x-model="receiverName" 
-                           :disabled="selectedAddressId !== 'new' && {{ $addresses->isNotEmpty() ? 'true' : 'false' }}"
                            placeholder="Họ và tên người nhận *" 
                            class="w-full text-xs rounded-lg bg-surface border-ink/20 focus:border-primary focus:ring-primary p-2 text-ink">
                 </div>
@@ -332,29 +393,62 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <input type="text" 
                            name="phone" 
                            x-model="phone" 
-                           :disabled="selectedAddressId !== 'new' && {{ $addresses->isNotEmpty() ? 'true' : 'false' }}"
                            placeholder="Số điện thoại liên hệ *" 
                            class="w-full text-xs rounded-lg bg-surface border-ink/20 focus:border-primary focus:ring-primary p-2 text-ink">
                 </div>
-                <div>
-                    <textarea name="shipping_address" 
-                              x-model="customAddress" 
-                              :disabled="selectedAddressId !== 'new' && {{ $addresses->isNotEmpty() ? 'true' : 'false' }}"
-                              rows="2" 
-                              placeholder="Địa chỉ cụ thể: Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành... *" 
-                              class="w-full text-xs rounded-lg bg-surface border-ink/20 focus:border-primary focus:ring-primary p-2 text-ink"></textarea>
+                
+              <!-- Nhóm 2 ô chọn: Tỉnh/Thành và Phường/Xã -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <select x-model="selectedProvince" 
+                            @change="
+                                selectedWard = ''; 
+                                wardsData = [];
+                                if (selectedProvince) {
+                                    const p = provincesData.find(x => x.Id === selectedProvince);
+                                    if (p && p.Districts) {
+                                        // Gom toàn bộ Phường/Xã của tất cả các Quận/Huyện vào chung một danh sách
+                                        p.Districts.forEach(d => {
+                                            if (d.Wards) wardsData.push(...d.Wards);
+                                        });
+                                    }
+                                }
+                            " 
+                            class="text-xs rounded-lg border-ink/20 p-2 focus:border-primary">
+                        <option value="">Chọn Tỉnh/Thành phố</option>
+                        <template x-for="p in provincesData" :key="p.Id">
+                            <option :value="p.Id" x-text="p.Name"></option>
+                        </template>
+                    </select>
+
+                    <select x-model="selectedWard" 
+                            :disabled="!selectedProvince" 
+                            class="text-xs rounded-lg border-ink/20 p-2 focus:border-primary">
+                        <option value="">Chọn Phường/Xã</option>
+                        <template x-for="w in wardsData" :key="w.Id">
+                            <option :value="w.Id" x-text="w.Name"></option>
+                        </template>
+                    </select>
                 </div>
+                
+                <div>
+                    <input type="text" 
+                           x-model="streetInput" 
+                           placeholder="Số nhà, tên đường... *" 
+                           class="w-full text-xs rounded-lg bg-surface border-ink/20 focus:border-primary focus:ring-primary p-2 text-ink">
+                </div>
+
+                <!-- Ô này chứa địa chỉ sau khi ghép nối thành công, bị ẩn khỏi mắt user nhưng Server vẫn đọc được -->
+                <input type="hidden" name="shipping_address" :value="customAddress">
             </div>
+            <!-- ============================================================= -->
         </div>
 
-        <!-- 3. Chọn Phương thức thanh toán (Tiền mặt / Chuyển khoản) -->
         <div>
             <label class="block font-heading text-xs font-semibold uppercase tracking-tight text-ink mb-2 flex items-center gap-1.5">
                 <x-phosphor-credit-card-light class="w-4 h-4 text-ink inline-block" /> PHƯƠNG THỨC THANH TOÁN:
             </label>
 
             <div class="grid grid-cols-2 gap-2 text-xs">
-                <!-- Tiền mặt COD -->
                 <label class="p-3 rounded-xl border flex flex-col justify-between cursor-pointer transition select-none"
                        :class="paymentMethod === 'cod' ? 'border-primary bg-base ring-1 ring-primary shadow-xs' : 'border-ink/10 bg-base/60 hover:border-ink/20'">
                     <div class="flex items-center justify-between mb-1">
@@ -365,7 +459,6 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <span class="text-xs text-ink/70 mt-0.5">Khi nhận hàng</span>
                 </label>
 
-                <!-- Chuyển khoản Ngân hàng -->
                 <label class="p-3 rounded-xl border flex flex-col justify-between cursor-pointer transition select-none"
                        :class="paymentMethod === 'bank' ? 'border-primary bg-base ring-1 ring-primary shadow-xs' : 'border-ink/10 bg-base/60 hover:border-ink/20'">
                     <div class="flex items-center justify-between mb-1">
@@ -378,7 +471,6 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             </div>
         </div>
 
-        <!-- 4. Ghi chú đơn hàng -->
         <div>
             <label class="block font-heading text-xs font-semibold uppercase tracking-tight text-ink mb-1.5 flex items-center gap-1.5">
                 <svg class="w-4 h-4 text-ink inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -393,7 +485,7 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                       class="w-full text-xs rounded-xl bg-base border-ink/20 focus:border-primary focus:ring-primary p-2.5 text-ink"></textarea>
         </div>
 
-        <!-- 5. MÃ GIẢM GIÁ / VOUCHER -->
+        <!-- MÃ GIẢM GIÁ / VOUCHER -->
         <div class="border-t border-ink/10 pt-4">
             <input type="hidden" name="coupon_code" :value="appliedCoupon ? appliedCoupon.code : ''">
             <label class="block font-heading text-xs font-semibold uppercase tracking-tight text-ink mb-2 flex items-center gap-1.5">
@@ -403,14 +495,13 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 MÃ GIẢM GIÁ / VOUCHER:
             </label>
 
-            <!-- Chưa áp dụng voucher -->
             <template x-if="!appliedCoupon">
                 <div>
                     <div class="flex gap-2">
                         <input type="text" 
                                x-model="couponInput" 
                                @keydown.enter.prevent="applyCoupon()"
-                               placeholder="Nhập mã (VD: WELCOME10, GIAM500K)..." 
+                               placeholder="Nhập mã (VD: WELCOME10)..." 
                                class="flex-1 uppercase font-bold text-xs rounded-xl bg-base border-ink/20 focus:border-primary focus:ring-primary p-2.5 text-ink">
                         <button type="button" 
                                 @click="applyCoupon()" 
@@ -420,25 +511,9 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             <span x-show="isApplyingCoupon" x-cloak>Đang kiểm tra...</span>
                         </button>
                     </div>
-
-                    <!-- Gợi ý mã có sẵn trong hệ thống -->
-                    <div class="mt-2 flex flex-wrap gap-1.5 items-center">
-                        <span class="text-[11px] text-ink/60">Gợi ý mã:</span>
-                        <button type="button" 
-                                @click="couponInput = 'WELCOME10'; applyCoupon();" 
-                                class="text-[11px] px-2 py-0.5 rounded-lg bg-base border border-ink/15 text-ink hover:border-primary hover:text-primary transition font-mono font-bold">
-                            WELCOME10 (-10%)
-                        </button>
-                        <button type="button" 
-                                @click="couponInput = 'GIAM500K'; applyCoupon();" 
-                                class="text-[11px] px-2 py-0.5 rounded-lg bg-base border border-ink/15 text-ink hover:border-primary hover:text-primary transition font-mono font-bold">
-                            GIAM500K (-500k)
-                        </button>
-                    </div>
                 </div>
             </template>
 
-            <!-- Đã áp dụng voucher thành công -->
             <template x-if="appliedCoupon">
                 <div class="p-2.5 rounded-xl bg-success/20 border border-success-ink/30 flex items-center justify-between">
                     <div class="flex items-center gap-2">
@@ -451,28 +526,16 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 </div>
             </template>
 
-            <!-- Thông báo thành công / lỗi -->
             <p x-show="couponMessage" x-text="couponMessage" class="mt-1.5 text-xs text-success-ink font-semibold" x-cloak></p>
             <p x-show="couponError" x-text="couponError" class="mt-1.5 text-xs text-danger-ink font-semibold" x-cloak></p>
-
-            <!-- Ghi chú quy định voucher -->
-            <p class="text-[11px] text-ink/60 mt-2 flex items-center gap-1 italic">
-                <svg class="w-3.5 h-3.5 text-ink/50 inline-block shrink-0 not-italic" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span>Mỗi đơn hàng chỉ áp dụng 1 mã giảm giá</span>
-            </p>
         </div>
 
-        <!-- 6. Chi tiết Bảng tính tiền & Thuế VAT -->
         <div class="bg-base p-4 rounded-xl space-y-2.5 text-xs text-ink/70 border border-ink/10">
-            <!-- Tạm tính -->
             <div class="flex justify-between items-center">
                 <span>Tạm tính (hàng chọn):</span>
                 <span class="font-heading font-bold tabular-nums text-ink text-sm" x-text="new Intl.NumberFormat('vi-VN').format(selectedSubtotal) + ' đ'"></span>
             </div>
 
-            <!-- Giảm giá voucher (chỉ hiện khi có voucher áp dụng) -->
             <template x-if="discountAmount > 0">
                 <div class="flex justify-between items-center text-success-ink font-semibold">
                     <span class="flex items-center gap-1">
@@ -483,7 +546,6 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 </div>
             </template>
 
-            <!-- Thuế VAT (Đã bao gồm trong giá máy ảnh) -->
             <div class="flex justify-between items-center text-ink/70">
                 <span class="flex items-center gap-1">
                     Thuế VAT (10%):
@@ -492,13 +554,11 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <span class="font-medium text-ink">Đã bao gồm trong giá</span>
             </div>
 
-            <!-- Phí ship -->
             <div class="flex justify-between items-center">
                 <span>Phí vận chuyển:</span>
                 <span class="font-heading text-success-ink font-bold tabular-nums">Miễn phí (0 đ)</span>
             </div>
 
-            <!-- Tổng thanh toán cuối cùng -->
             <div class="border-t border-ink/10 pt-3 mt-2 flex justify-between items-baseline">
                 <div>
                     <span class="font-heading text-xs font-semibold text-ink block">TỔNG THANH TOÁN:</span>
@@ -508,7 +568,6 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             </div>
         </div>
 
-        <!-- 7. Nút Đặt Hàng Trực Tiếp -->
         <div class="space-y-2.5">
             <template x-if="selectedCount > 0">
                 <x-button variant="primary" size="lg" type="submit" ::disabled="isSubmitting" class="w-full uppercase tracking-wider font-bold shadow-sm">
@@ -530,22 +589,5 @@ class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 &larr; Tiếp tục chọn thêm máy ảnh
             </x-button>
         </div>
-
-        <!-- Cam kết -->
-        <div class="pt-4 border-t border-ink/10 space-y-2 text-xs text-ink/70">
-            <div class="flex items-center gap-2">
-                <x-phosphor-check-light class="w-4 h-4 text-success-ink shrink-0 font-bold" />
-                <span>Cam kết chính hãng 100% Sony, Canon, Fuji</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <x-phosphor-check-light class="w-4 h-4 text-success-ink shrink-0 font-bold" />
-                <span>Bảo hành chính hãng 12 - 24 tháng</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <x-phosphor-check-light class="w-4 h-4 text-success-ink shrink-0 font-bold" />
-                <span>Xuất hóa đơn VAT điện tử đầy đủ</span>
-            </div>
-        </div>
     </form>
-
 </div>
